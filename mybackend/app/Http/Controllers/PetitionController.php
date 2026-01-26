@@ -167,11 +167,11 @@ class PetitionController extends Controller
         return false;
     }
 
-    function create(Request $request)
-    {
-        $categories = Category::all();
-        return view("admin.petitions.create", compact("categories"));
-    }
+//    function create(Request $request)
+//    {
+//        $categories = Category::all();
+//        return view("admin.petitions.create", compact("categories"));
+//    }
 
     function store(Request $request)
     {
@@ -190,14 +190,14 @@ class PetitionController extends Controller
         return response()->json(["message" => "success", "se ha creado exitosamente la peticion"], 202);
     }
 
-    function search(Request $request)
-    {
-        $petitions = Petition::where("title", "like", "%$request->title%")
-            ->orWhere("description", "like", "%$request->title%")
-            ->paginate(10);
-        $count = Petition::where("title", "like", "%$request->title%")
-            ->orWhere("description", "like", "%$request->title%")
-            ->count();
-        return view("admin.home", compact("count", "petitions"));
-    }
+//    function search(Request $request)
+//    {
+//        $petitions = Petition::where("title", "like", "%$request->title%")
+//            ->orWhere("description", "like", "%$request->title%")
+//            ->paginate(10);
+//        $count = Petition::where("title", "like", "%$request->title%")
+//            ->orWhere("description", "like", "%$request->title%")
+//            ->count();
+//        return view("admin.home", compact("count", "petitions"));
+//    }
 }
