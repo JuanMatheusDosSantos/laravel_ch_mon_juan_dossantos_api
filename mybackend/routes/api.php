@@ -41,3 +41,15 @@ Route::controller(PetitionController::class)->group(function () {
     Route::put('petition/{id}', 'update');
     Route::post('petition/sign/{id}', 'sign');
 });
+// Rutas Públicas (Login y Registro)
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+// Rutas Protegidas (Requieren Token válido)
+// CAMBIO IMPORTANTE: Cambia 'middleware('api')' por 'middleware('auth:api')'
+Route::middleware('auth:api')->group(function () {
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('me', [AuthController::class, 'me']);
+});
+// Ruta de Refresh (Fuera del auth:api estricto)
+// Laravel intentará leer el token del header, y si es válido (aunque expirado), lo refrescará.
+Route::middleware('api')->post('refresh', [AuthController::class, 'refresh']);
