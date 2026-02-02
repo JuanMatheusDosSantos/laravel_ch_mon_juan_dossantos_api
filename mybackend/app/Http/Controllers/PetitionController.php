@@ -73,17 +73,17 @@ class PetitionController extends Controller
     {
         try {
 
-        $request->validate([
-            "title" => "max:255|nullable",
-            "description" => "nullable|max:255",
-            "destinatary" => "nullable|max:255",
-            "category" => "required",
-            "signers" => "numeric|min:0",
-            "status" => "required|in:accepted,pending",
-            "image" => "nullable|file|mimes:jpg,jpeg,png,webp"
-        ]);
-        }catch (\Exception $e){
-            return response()->json(["message"=>"error","la validación ha fallado, por favor, introduce correctamente los datos"],400);
+            $request->validate([
+                "title" => "max:255|nullable",
+                "description" => "nullable|max:255",
+                "destinatary" => "nullable|max:255",
+                "category" => "required",
+                "signers" => "numeric|min:0",
+                "status" => "required|in:accepted,pending",
+                "image" => "nullable|file|mimes:jpg,jpeg,png,webp"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(["message" => "error", "la validación ha fallado, por favor, introduce correctamente los datos"], 400);
         }
         try {
             $petition = Petition::findOrFail($id);
@@ -175,19 +175,51 @@ class PetitionController extends Controller
 
     function store(Request $request)
     {
-        $request->validate([
-            "name" => "required|max:255",
-            "description" => "nullable|max:255"
-        ]);
         try {
-            Petition::create([
-                "name" => $request->get("name"),
-                "description" => $request->get("description")
+            $request->validate([
+                "title" => "required|max:255|unique:petitions,title",
+                "description" => "required",
+                "destinatary" => "required",
+                "category" => "required",
+                "image" => "nullable|file|mimes:jpg,jpeg,png,webp"
             ]);
         } catch (\Exception $e) {
-            return back()->withErrors(['image' => 'se ha producido un error a la hora de crear la peticion'])->withInput();;
+            return response()->json([
+                "message" => "error",
+                "la validación ha fallado, por favor, introduce correctamente los datos"
+//                $e->getMessage()
+            ], 400);
         }
-        return response()->json(["message" => "success", "se ha creado exitosamente la peticion"], 202);
+
+        try {
+            $user =
+//              Auth::user();
+                1;
+            $categoryId = $request->category;
+            $petition = Petition::create([
+                "title" => $request->get("title"),
+                "description" => $request->get("description"),
+                "destinatary" => $request->get("destinatary"),
+                "category_id" => $categoryId,
+//                "user_id" => $user->id,
+                "user_id" => $user,
+                "signers" => 0,
+                "status" => "pending"
+            ]);
+            if ($request->hasFile("image")) {
+
+                $response = $this->fileUpload($request, $petition->id);
+                if (!$response) {
+                    return response()->json(["message" => 'error', 'No se pudo subir la imagen'], 400);
+                }
+            } else {
+                // Esto es un caso raro, normalmente el validator ya impide que pase
+//                return response()->json(['message' =>"error", 'Debes seleccionar una imagen'],400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => "error", 'se ha producido un error a la hora de crear la peticion'], 400);
+        }
+        return response()->json(["message" => "success", "se ha creado exitosamente la peticion"], 201);
     }
 
 //    function search(Request $request)
@@ -200,4 +232,29 @@ class PetitionController extends Controller
 //            ->count();
 //        return view("admin.home", compact("count", "petitions"));
 //    }
+
+
+    private function fileUpload(Request $request, $id = null)
+    {
+        $image = null;
+        if ($request->hasFile("image")) {
+            $image = time() . '.' . $request->image->extension();
+            $path = public_path('assets\img\petitions');
+            $pathName = pathinfo($request->file("image")->getClientOriginalName(), PATHINFO_FILENAME);
+            $temp = $request->file("image")->getPathname();
+            if (!copy($temp, $path . DIRECTORY_SEPARATOR . $image)) {
+                return false; // Error al copiar
+            }
+
+            // Asociar archivo a la petición
+            $petition = Petition::findOrFail($id);
+            $petition->file()->create([
+                'name' => $pathName,
+                'file_path' => $image,
+                'petition_id' => $id
+            ]);
+            return true;
+        }
+        return false;
+    }
 }
