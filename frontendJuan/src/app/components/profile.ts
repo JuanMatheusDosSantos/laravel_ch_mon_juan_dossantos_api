@@ -2,14 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { User } from '../../auth/auth.model';
-import {AuthService} from '../../auth/auth';
+import {User} from '../auth/auth.model';
+import {AuthService} from '../auth/auth';
 @Component({
   selector: 'app-profile',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './profile.html',
-  styleUrl: './profile.css',
+  templateUrl: '../pages/profile/profile.html',
+  styleUrl: '../pages/profile/profile.css',
 })
 export class ProfileComponent implements OnInit {
   user$: Observable<User | null>;
@@ -28,3 +28,4 @@ export class ProfileComponent implements OnInit {
     this.auth.logout().subscribe(() => this.router.navigate(['/login']));
   }
 }
+

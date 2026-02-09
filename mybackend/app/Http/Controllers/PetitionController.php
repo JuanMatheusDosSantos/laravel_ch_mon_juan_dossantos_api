@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\File;
 use App\Models\Petition;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File as FileFacade;
 
 class PetitionController extends Controller
@@ -47,7 +48,7 @@ class PetitionController extends Controller
         return response()->json($petition);
     }
 
-    function delete($id)
+    function destroy($id)
     {
         try {
             $name = Petition::findOrFail($id)->name;
@@ -87,6 +88,12 @@ class PetitionController extends Controller
         }
         try {
             $petition = Petition::findOrFail($id);
+        }catch (\Exception $e){
+            return response()->json(["hubo un error"],401);
+        }
+        // Autorización (Policy)
+        $this->authorize('update', $petition);
+        try {
             if (!is_null($request->title)) {
                 $petition->title = strtolower($request->title);
             }
@@ -257,4 +264,24 @@ class PetitionController extends Controller
         }
         return false;
     }
+
+function sign($id)
+{
+
+    try {
+        $petition = Petition::findOrFail($id);
+        $userId = Auth::id();
+        if (!$petition->userSigners->contains(Auth::id())) {
+            $petition->userSigners()->attach($userId);
+            $petition->signers = $petition->signers + 1;
+        } else {
+            $petition->userSigners()->detach($userId);
+            $petition->signers = $petition->signers - 1;
+        }
+        $petition->save();
+    } catch (\Exception $e) {
+        return back()->withError($e->getMessage())->withInput();
+    }
+    return redirect()->back();
+}
 }

@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import {AuthService} from '../../auth/auth';
+import {AuthService} from '../auth/auth';
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [FormsModule, CommonModule, RouterLink],
-  templateUrl: './login.html',
-  styleUrl: './login.css',
+  templateUrl: '../pages/login/login.html',
+  styleUrl: '../pages/login/login.css',
 })
 export class LoginComponent {
   email = '';
@@ -23,8 +23,7 @@ export class LoginComponent {
 // Si todo va bien, nos vamos a las peticiones
           this.router.navigate(['/petitions']);
         },
-        error: (err: { status: number; }) => {
-          console.error('LOGIN ERROR', err);
+        error: (err: { status: number; }) => {console.error('LOGIN ERROR', err);
           if (err.status === 401) {
             this.errorMessage = 'El email o la contraseña son incorrectos.';
             this.password = ''; // Borramos pass para facilitar reintento
@@ -35,3 +34,4 @@ export class LoginComponent {
       });
   }
 }
+

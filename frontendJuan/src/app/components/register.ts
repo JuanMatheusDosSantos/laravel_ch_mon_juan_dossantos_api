@@ -1,14 +1,15 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import {AuthService} from '../../auth/auth';
+import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {Router, RouterLink} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {AuthService} from '../auth/auth';
+
 @Component({
   standalone: true,
   selector: 'app-register',
   imports: [FormsModule, CommonModule, RouterLink],
-  templateUrl: './register.html',
-  styleUrl: './register.css',
+  templateUrl: '../pages/register/register.html',
+  styleUrl: '../pages/register/register.css',
 })
 export class RegisterComponent {
   formData = {
@@ -17,10 +18,13 @@ export class RegisterComponent {
     password: '',
   };
   errorMessage: string = '';
+
   constructor(
     private auth: AuthService,
     private router: Router
-  ) {}
+  ) {
+  }
+
   register() {
     this.errorMessage = '';
     this.auth.register(this.formData).subscribe({
