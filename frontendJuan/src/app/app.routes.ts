@@ -3,7 +3,7 @@ import {CreateComponent} from './components/create-component';
 import {EditComponent} from './components/edit-component';
 import {ListComponent} from './components/list-component';
 import {Routes} from '@angular/router';
-import {HomeComponent} from './components/home-component';
+import {HomeComponent} from './home/home';
 import {LoginComponent} from './components/login';
 import {RegisterComponent} from './components/register';
 import {ProfileComponent} from './components/profile';
