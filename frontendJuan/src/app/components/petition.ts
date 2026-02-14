@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap, map } from 'rxjs';
-import {Petition} from '../models/petition';
+import {Categoria, Petition} from '../models/petition';
 @Injectable({ providedIn: 'root' })
 export class PetitionService {
   private http = inject(HttpClient);
@@ -10,19 +10,8 @@ export class PetitionService {
 // Store privado de peticiones
   #peticiones = signal<Petition[]>([]);
   loading = signal<boolean>(false);
-// --- Selectors ---
-// Exponemos las peticiones como solo lectura
-  allPeticiones = this.#peticiones.asReadonly();
-  // fetchPeticiones() {
-  //   this.loading.set(true);
-  //   return this.http.get<{ data: Petition[] }>(this.API_URL).pipe(
-  //     map(res => res.data),
-  //     tap(data => {
-  //       this.#peticiones.set(data);
-  //       this.loading.set(false);
-  //     })
-  //   );
-  // }
+
+
   fetchPeticiones() {
     this.loading.set(true);
     return this.http.get<any>(this.API_URL).pipe(
@@ -49,11 +38,7 @@ export class PetitionService {
       })
     );
   }
-  // getById(id: number) {
-  //   return this.http.get<{ data: Petition }>(`${this.API_URL}/${id}`).pipe(
-  //     map(res => res.data)
-  //   );
-  // }
+
 
   getById(id: number) {
     return this.http.get<any>(`${this.API_URL}/${id}`).pipe(
@@ -98,6 +83,9 @@ export class PetitionService {
       `${this.API_URL}/firmar/${id}`,
       {}
     );
+  }
+  getCategories() {
+    return this.http.get<Categoria[]>(`${this.API_URL}/categories`);
   }
 }
 

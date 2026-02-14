@@ -41,11 +41,21 @@ declare var bootstrap: any;
 
 
 export class HomeComponent {
+
   terminoBusqueda: string = '';
 
+  private authServices = inject(AuthService);
+  public isLoggedIn = this.authServices.isLoggedIn;
+  public currentUser = this.authServices.currentUser;
   // Inyectamos el servicio para que el HTML pueda usarlo
   // Usamos 'public' para que sea visible en el template (.html)
-  constructor(private router: Router, public authService: AuthService) {}
+  constructor(private router: Router, public authService: AuthService) {
+
+  }
+  ngOnInit(){
+    this.authService.loadUserIfNeeded();
+  }
+
 
   buscar() {
     if (this.terminoBusqueda.trim()) {

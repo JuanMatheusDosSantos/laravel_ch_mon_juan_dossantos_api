@@ -5,14 +5,18 @@ import {PetitionService} from '../../components/petition';
 import {AuthService} from '../../auth/auth';
 import {Petition} from '../../models/petition';
 
-import{User} from "../../auth/auth.model";
 
 @Component({
   selector: 'app-list-component',
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './list-component.html',
-  styleUrl: './list-component.css',
+  styleUrls: [
+    './list-component.css',
+    '../../../assets/css/carouselHome.css',
+    '../../../assets/css/general.css'
+
+  ],
 })
 export class ListComponent {
   peticionService = inject(PetitionService);
@@ -23,7 +27,7 @@ export class ListComponent {
   public isLoggedIn = this.authService.isLoggedIn;
 
 
-  public currentUser: User | null=null;
+  public currentUser: any | null=null;
 
 
   ngOnInit(): void {

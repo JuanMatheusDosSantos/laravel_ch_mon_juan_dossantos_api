@@ -1,1 +1,49 @@
-<p>edit-component works!</p>
+<div class="text-center my-5">
+  <h1>Demos el primer paso hacia el cambio</h1>
+  <div class="container d-flex justify-content-center">
+
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="w-50 border shadow p-5 bg-white rounded">
+
+      @if (errorMessage) {
+        <div class="alert alert-danger">
+          <p class="mb-0">{{ errorMessage }}</p>
+        </div>
+      }
+
+      <div class="mb-3 text-start">
+        <label for="title" class="form-label">Escribe el título de tu petición</label>
+        <input type="text" class="form-control" id="title" formControlName="title">
+      </div>
+
+      <div class="mb-3 text-start">
+        <label for="category" class="form-label">Categoría</label>
+        <select formControlName="category" id="category" class="form-select">
+          <option value="">Selecciona una categoría</option>
+          @for (cat of categoria; track cat.id) {
+            <option [value]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="mb-3 text-start">
+        <label for="description" class="form-label">Cuenta tu historia</label>
+        <textarea formControlName="description" id="description" class="form-control" rows="3"></textarea>
+      </div>
+
+      <div class="mb-3 text-start">
+        <label for="destinatary" class="form-label">¿A quién va dirigido?</label>
+        <input type="text" class="form-control" id="destinatary" formControlName="destinatary">
+      </div>
+
+      <div class="mb-4 text-start">
+        <label for="image" class="form-label">Añade una imagen</label>
+        <input type="file" (change)="onFileChange($event)" id="image" accept="image/*" class="form-control">
+      </div>
+
+      <button type="submit" class="btn btn-outline-primary w-100" [disabled]="editForm.invalid || loading">
+        {{ loading ? 'Creando...' : 'Crear petición' }}
+      </button>
+
+    </form>
+  </div>
+</div>

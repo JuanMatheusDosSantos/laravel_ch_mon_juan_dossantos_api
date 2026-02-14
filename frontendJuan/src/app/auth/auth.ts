@@ -37,10 +37,15 @@ export class AuthService {
       })
     );
   }
+
   getProfile() {
     return this.http
       .get<User>(`${this.api}/me`)
-      .pipe(tap(user => this.userSubject.next(user)));
+      .pipe(tap(user => {
+        this.userSubject.next(user);
+        this.currentUser.set(user)
+        }
+      ));
   }
 
   isAuthenticated(): boolean {
@@ -66,7 +71,7 @@ export class AuthService {
     localStorage.removeItem('user_data');
     this.currentUser.set(null); // Esto actualiza el Navbar al instante
     this.isLoggedIn.set(false);
-    this.router.navigate(['/login']); // Te manda al login
+    this.router.navigate(['/']); // Te manda al login
   }
   getAccessToken() {
     return localStorage.getItem('access_token');

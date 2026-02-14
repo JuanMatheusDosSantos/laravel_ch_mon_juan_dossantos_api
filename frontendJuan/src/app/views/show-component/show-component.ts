@@ -10,7 +10,11 @@ import { Petition } from '../../models/petition';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './show-component.html',
-  styleUrls: ['./show-component.css']
+  styleUrls: [
+    './show-component.css',
+    '../../../assets/css/carouselHome.css',
+    '../../../assets/css/general.css'
+  ]
 })
 export class ShowComponent implements OnInit {
   public peticionService = inject(PetitionService);
@@ -21,18 +25,15 @@ export class ShowComponent implements OnInit {
   // DEFINIR COMO SIGNAL PARA QUE EL HTML NO DE ERROR
   public peticion = signal<Petition | null>(null);
   public loading = signal(true);
+  public isLoggedIn = this.authService.isLoggedIn;
 
-  // AÑADE ESTA LÍNEA AQUÍ
-  public currentUserId: number | null = null;
 
+  // AÑADE ESTA LÍNEA
+
+  public currentUserId = this.authService.currentUser;
   ngOnInit(): void {
+    this.authService.loadUserIfNeeded();
     const id = Number(this.route.snapshot.paramMap.get('id'));
-
-    // 1. QUITAMOS EL SUBSCRIBE.
-    // Si es un Signal, simplemente leemos su valor y lo asignamos.
-    const user = this.authService.currentUser();
-    this.currentUserId = user ? user.id : null;
-
     // 2. Cargamos la petición
     if (id) {
       this.peticionService.getById(id).subscribe({
@@ -53,7 +54,7 @@ export class ShowComponent implements OnInit {
     console.log('Datos de la petición en imagen:', pet); // <--- AÑADE ESTO
 
     if (pet && pet.files && pet.files.length > 0) {
-      const finalUrl = `http://localhost:8000/${pet.files[0].file_path.replace('storage/', '')}`;
+      const finalUrl = `http://localhost:8000/storage/assets/img/petitions/${pet.files[0].file_path.replace('storage/', '')}`;
       console.log('URL Generada:', finalUrl); // <--- Y ESTO
       return finalUrl;
     }

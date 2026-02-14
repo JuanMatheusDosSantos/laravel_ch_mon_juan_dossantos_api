@@ -1,13 +1,13 @@
 import {authGuard} from './auth/auth-guard';
-import {CreateComponent} from './components/create-component';
-import {EditComponent} from './components/edit-component';
 import {Routes} from '@angular/router';
 import {HomeComponent} from './home/home';
 import {LoginComponent} from './pages/login/login';
-import {RegisterComponent} from './pages/register/register';
 import {ProfileComponent} from './pages/profile/profile';
 import {ShowComponent} from './views/show-component/show-component';
 import {ListComponent} from './views/list-component/list-component';
+import {RegisterComponent} from './pages/register/register';
+import {CreateComponent} from './views/create-component/create-component';
+import {EditComponent} from './views/edit-component/edit-component';
 
 export const routes: Routes = [
 
@@ -22,4 +22,4 @@ export const routes: Routes = [
 { path: 'register', component: RegisterComponent },
 { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
 // Wildcard: Cualquier ruta no encontrada va al login (o a 404)
-  { path: '**', redirectTo: 'home', pathMatch: 'full'},];
+{ path: '**', component: HomeComponent, pathMatch: 'full'},];

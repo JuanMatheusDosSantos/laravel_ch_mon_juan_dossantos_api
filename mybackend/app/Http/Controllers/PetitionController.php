@@ -15,34 +15,20 @@ class PetitionController extends Controller
     {
        // $count = Petition::all()->count();
 //        $petitions = Petition::paginate(10);
-        $petitions = Petition::with('file')->get();
+        $petitions = Petition::with('file',"user")->get();
         return response()->json($petitions, 200);
     }
 
-//    function cambiarEstado($id)
-//    {
-//        try {
-//            $petition = Petition::findOrFail($id);
-//            $petitionStatus = $petition->status;
-//            switch ($petitionStatus) {
-//                case "accepted":
-//                    $petition->status = "pending";
-//                    break;
-//                case "pending":
-//                    $petition->status = "accepted";
-//                    break;
-//            }
-//            $petition->save();
-//        } catch (\Exception $e) {
-//            return response()->json(["message" => "error", "ha ocurrido un error"], 400);
-//        }
-//        return response()->json("se ha podido cambiar el estado",200);
-//    }
+    public function getCategories()
+    {
+        $categories = Category::all();
+        return response()->json($categories, 200);
+    }
 
     function show($id)
     {
         try {
-            $petition = Petition::with('file')->findOrFail($id);
+            $petition = Petition::with('file',"user")->findOrFail($id);
         } catch (\Exception $e) {
             return response()->json(["message" => "error", "no se ha podido encontrar la peticion"], 404);
         }
@@ -60,17 +46,6 @@ class PetitionController extends Controller
         return response()->json("se ha eliminado la publicación $name", 200);
     }
 
-//    function edit($id)
-//    {
-//        try {
-//            $categories = Category::all();
-//            $petition = Petition::findOrFail($id);
-//        }catch (\Exception $e){
-//            return response()->json(["message"=>"error","no se ha podido encontrar la peticion"],400);
-//        }
-//        return response()->json($petition);
-//    }
-
     function update(Request $request, $id)
     {
         try {
@@ -79,13 +54,14 @@ class PetitionController extends Controller
                 "title" => "max:255|nullable",
                 "description" => "nullable|max:255",
                 "destinatary" => "nullable|max:255",
-                "category" => "required",
+                "category" => "required|exists:categories,id",
                 "signers" => "numeric|min:0",
                 "status" => "required|in:accepted,pending",
                 "image" => "nullable|file|mimes:jpg,jpeg,png,webp"
             ]);
         } catch (\Exception $e) {
-            return response()->json(["message" => "error", "la validación ha fallado, por favor, introduce correctamente los datos"], 400);
+//            return response()->json(["message" => "error", "la validación ha fallado, por favor, introduce correctamente los datos"], 400);
+            return response()->json(["message" => "error", $e->getMessage()], 400);
         }
         try {
             $petition = Petition::findOrFail($id);
@@ -93,13 +69,13 @@ class PetitionController extends Controller
             return response()->json(["hubo un error"],401);
         }
         // Autorización (Policy)
-        $this->authorize('update', $petition);
+//        $this->authorize('update', $petition);
         try {
             if (!is_null($request->title)) {
                 $petition->title = strtolower($request->title);
             }
             if (!is_null($request->description)) {
-                $petition->title = $request->description;
+                $petition->description = $request->description;
             }
             try {
                 if (!is_null($request->image)) {
@@ -122,6 +98,21 @@ class PetitionController extends Controller
             }
             if (!(is_null($request->category)) && ($petition->category_id != $request->category)) {
                 $petition->category_id = $request->category;
+//                $catId = intval($request->category);
+//
+//                switch ($catId) {
+//                    case 1: $petition->category_id = 1; break;
+//                    case 2: $petition->category_id = 2; break;
+//                    case 3: $petition->category_id = 3; break;
+//                    case 4: $petition->category_id = 4; break;
+//                    case 5: $petition->category_id = 5; break;
+//                    case 6: $petition->category_id = 6; break;
+//                    default:
+//                        // Log para debug: Esto te dirá en storage/logs/laravel.log qué está llegando realmente
+//                        \Log::info("ID de categoría no reconocido: " . $request->category);
+//                        $petition->category_id = 1;
+//                        break;
+//                }
             }
         } catch (\Exception $e) {
             return response()->json(["message" => "error",

@@ -10,7 +10,7 @@
     <h3><strong>Peticiones patrocinadas por otros usuarios de Change.org</strong></h3>
 
     <div class="row g-4">
-      @for(p of peticionService.allPeticiones(); track p.id){
+      @for(p of peticiones; track p.id){
         <div class="col-12 col-md-6 col-lg-4 col-xl-3">
           <div class="card w-100 h-100 shadow-sm">
             <a [routerLink]="['/petitions', p.id]" class="text-decoration-none text-black">
@@ -31,8 +31,7 @@
                 </div>
 
                 @if (isLoggedIn()) {
-
-                  @if (currentUser()?.id === p.user_id) {
+                  @if (currentUser?.id === p.user_id) {
                     <button class="btn btn-outline-dark w-100 d-none">
                       Firmar esta petición
                     </button>
@@ -40,10 +39,12 @@
                       Eliminar mi petición
                     </button>
                   }
-                  @else if (p.signers?.includes(authService.currentUser()?.id)) {
-                    <button (click)="p.id && firmar(p.id); $event.preventDefault()" class="btn btn-dark w-100">
-                      Des-firmar esta petición
-                    </button>
+
+                  @else if (p.signers === currentUser?.id) {
+<!--                    <button (click)="p.id && firmar(p.id); $event.preventDefault()" class="btn btn-dark w-100">-->
+<!--                      Des-firmar esta petición-->
+<!--                    </button>-->
+                    <p class="btn btn-dark w-100 disabled"> Ya has firmado esta petición</p>
                   }
                   @else {
                     <button (click)="p.id && firmar(p.id); $event.preventDefault()" class="btn btn-outline-dark w-100">

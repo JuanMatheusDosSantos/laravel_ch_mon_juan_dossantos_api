@@ -3,10 +3,14 @@
     <img src="assets/img/background-home.svg" alt="" class="position-absolute start-25 w-50" style="z-index: -10;">
     <div class="position-relative pt-5 container ">
       <div class="mt-3 pt-5 align-content-center text-center">
+        @if (isLoggedIn()) {
+          <h1>Bienvenido {{ currentUser()?.name }} con tu ayuda, el cambio comenzará aquí.</h1>
+        }@else{
         <h1>El cambio comienza aqui.</h1>
+        }
         <p>Únete a 567.908.560 personas que están impulsando un cambio real en sus comunidades.</p>
         <div>
-          @if (authService.isLoggedIn()) {
+          @if (isLoggedIn()) {
           <a href="/petitions/create" class="btn btn-warning mx-2">Crear una petición</a>
           }
           @else{
