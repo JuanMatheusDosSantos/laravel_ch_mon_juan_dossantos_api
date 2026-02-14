@@ -1,37 +1,45 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, OnInit } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import {AuthService} from '../auth/auth';
+import { AuthService } from '../auth/auth'; // Verifica que esta ruta sea correcta
+
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink],
   templateUrl: '../pages/login/login.html',
   styleUrl: '../pages/login/login.css',
 })
-export class LoginComponent {
-  email = '';
-  password = '';
+export class LoginComponent implements OnInit {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+
   errorMessage = '';
-  constructor(private auth: AuthService, private router: Router) {}
-  login() {
-    this.errorMessage = ''; // Reseteamos errores previos
-    this.auth.login({ email: this.email, password: this.password })
-      .subscribe({
-        next: () => {
-// Si todo va bien, nos vamos a las peticiones
-          this.router.navigate(['/petitions']);
-        },
-        error: (err: { status: number; }) => {console.error('LOGIN ERROR', err);
-          if (err.status === 401) {
-            this.errorMessage = 'El email o la contraseña son incorrectos.';
-            this.password = ''; // Borramos pass para facilitar reintento
-          } else {
-            this.errorMessage = 'Ocurrió un error inesperado. Inténtalo luego.';
-          }
-        }
-      });
+  // Esta es la propiedad que el error dice que falta:
+  loginForm!: FormGroup;
+
+  ngOnInit() {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]]
+    });
+  }
+
+  // Asegúrate de que en el HTML diga (ngSubmit)="onSubmit()" o cambia esto a login()
+  onSubmit() {
+    if (this.loginForm.invalid) return;
+
+    this.errorMessage = '';
+    this.auth.login(this.loginForm.value).subscribe({
+      next: () => {
+        this.router.navigate(['/petitions']);
+      },
+      error: (err) => {
+        this.errorMessage = 'Credenciales incorrectas';
+        console.error(err);
+      }
+    });
   }
 }
-

@@ -14,7 +14,8 @@ class PetitionController extends Controller
     public function index()
     {
         $count = Petition::all()->count();
-        $petitions = Petition::paginate(10);
+//        $petitions = Petition::paginate(10);
+        $petitions = Petition::with('file')->get();
         return response()->json($petitions, 200);
     }
 
@@ -41,9 +42,9 @@ class PetitionController extends Controller
     function show($id)
     {
         try {
-            $petition = Petition::findOrFail($id);
+            $petition = Petition::with('file')->findOrFail($id);
         } catch (\Exception $e) {
-            return response()->json(["message" => "error", "no se ha podido encontrar la peticion"], 401);
+            return response()->json(["message" => "error", "no se ha podido encontrar la peticion"], 404);
         }
         return response()->json($petition);
     }

@@ -13,19 +13,47 @@ export class PetitionService {
 // --- Selectors ---
 // Exponemos las peticiones como solo lectura
   allPeticiones = this.#peticiones.asReadonly();
+  // fetchPeticiones() {
+  //   this.loading.set(true);
+  //   return this.http.get<{ data: Petition[] }>(this.API_URL).pipe(
+  //     map(res => res.data),
+  //     tap(data => {
+  //       this.#peticiones.set(data);
+  //       this.loading.set(false);
+  //     })
+  //   );
+  // }
   fetchPeticiones() {
     this.loading.set(true);
-    return this.http.get<{ data: Petition[] }>(this.API_URL).pipe(
-      map(res => res.data),
+    return this.http.get<any>(this.API_URL).pipe(
+      map(res => {
+        const data = res.data ? res.data : res;
+        return data.map((p: any) => {
+          // Si Laravel envía 'file' (por el with), lo metemos en tu array 'files'
+          if (p.file) { p.files = [p.file]; }
+          return p;
+        });
+      }),
       tap(data => {
         this.#peticiones.set(data);
         this.loading.set(false);
       })
     );
   }
+  // getById(id: number) {
+  //   return this.http.get<{ data: Petition }>(`${this.API_URL}/${id}`).pipe(
+  //     map(res => res.data)
+  //   );
+  // }
+
   getById(id: number) {
-    return this.http.get<{ data: Petition }>(`${this.API_URL}/${id}`).pipe(
-      map(res => res.data)
+    return this.http.get<any>(`${this.API_URL}/${id}`).pipe(
+      map(res => {
+        const p = res.data ?? res;
+        // Normalizamos aquí para que TODO el mundo reciba 'files'
+        if (p.file) { p.files = [p.file]; }
+        return p as Petition;
+      })
     );
   }
   create(formData: FormData) {

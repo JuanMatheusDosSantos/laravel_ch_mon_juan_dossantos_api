@@ -13,14 +13,14 @@ import {Petition} from '../models/petition';
   styleUrls: ['../views/show-component/show-component.css']
 })
 export class ShowComponent implements OnInit {
-  private peticionService = inject(PetitionService);
+  public peticionService = inject(PetitionService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
   peticion = signal<Petition | null>(null);
   loading = signal(true);
   public currentUserId: number | null = null;
-  readonly API_STORAGE = 'http://localhost:8000/storage/';
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -41,14 +41,26 @@ export class ShowComponent implements OnInit {
         this.loading.set(false);
       }
     });
-  }
-  getImagenUrl(): string {
+  }getImagenUrl(): string {
     const pet = this.peticion();
     if (pet && pet.files && pet.files.length > 0) {
-      const path = pet.files[0].file_path.replace('storage/', '');
-      //return `${this.API_STORAGE}${cleanPath}`;
-      return `${this.API_STORAGE}${path}`;
+      let path = pet.files[0].file_path;
+
+      // 1. Limpiamos cualquier rastro de 'public/' o 'storage/' que venga de la BD
+      path = path.replace('public/', '').replace('storage/', '');
+
+      // 2. Si el path no empieza por '/', se lo ponemos para que no se pegue a la base
+      if (!path.startsWith('/')) {
+        path = '/' + path;
+      }
+
+      // 3. Usamos la base SIN 'public'
+      const baseUrl = 'http://localhost:8000/storage/assets/img/petitions';
+
+      return `${baseUrl}${path}`;
     }
+
+    // Si no hay nada de lo anterior, imagen por defecto
     return 'assets/no-image.png';
   }
   delete() {

@@ -1,1 +1,59 @@
-<p>show-component works!</p>
+<div class="container mt-5" *ngIf="peticion() as p">
+  <div class="row">
+    <div class="col-md-9">
+      <h1 class="mb-4">{{ p.title }}</h1>
+
+      <img [src]="getImagenUrl()"
+           class="w-100 mb-4 rounded shadow"
+           [alt]="p.title">
+
+      <div class="mb-5">
+        <h2 class="h4">El problema</h2>
+        <p class="text-justify" style="white-space: pre-line;">
+          {{ p.description }}
+        </p>
+
+        <hr class="my-4">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+          <div class="d-flex align-items-center">
+            <img src="assets/img/avatar-sunshine.svg" alt="Avatar" width="50" class="rounded-circle">
+            <div class="ms-3">
+              <h5 class="mb-0">{{ p.user?.name }}</h5>
+              <p class="mb-0 text-muted small">Creador de la petición</p>
+            </div>
+          </div>
+
+          <div *ngIf="authService.isLoggedIn() && currentUserId === p.user_id" class="mt-3 mt-md-0">
+            <div class="btn-group">
+              <a [routerLink]="['/petitions/edit', p.id]" class="btn btn-outline-primary">Editar</a>
+              <button (click)="delete()" class="btn btn-outline-danger">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm sticky-top" style="top: 2rem;">
+        <div class="card-body text-center">
+          <h3 class="card-title h2 mb-0">{{ p.signers?.length || 0 }}</h3>
+          <p class="text-muted">firmas conseguidas</p>
+
+          <hr>
+
+          <button *ngIf="authService.isLoggedIn()"
+                  (click)="peticionService.firmar(p.id).subscribe()"
+                  [disabled]="currentUserId === p.user_id"
+                  class="btn btn-warning w-100 py-2 mt-3">
+            Firma ahora
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading()" class="text-center mt-5">
+  <p>Cargando petición...</p>
+</div>

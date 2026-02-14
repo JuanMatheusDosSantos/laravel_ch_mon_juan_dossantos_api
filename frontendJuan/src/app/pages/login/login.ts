@@ -1,37 +1,51 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import {AuthService} from '../../auth/auth';
+import { Component, inject, OnInit } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, Validators, FormBuilder } from '@angular/forms'; // Asegúrate de que ReactiveFormsModule esté aquí
+import { Router } from '@angular/router';
+import { AuthService } from '../../auth/auth';
+import { PetitionService } from '../../components/petition';
+
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterLink],
+  // IMPORTANTE: ReactiveFormsModule debe estar en este array
+  imports: [ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class LoginComponent {
-  email = '';
-  password = '';
+export class LoginComponent implements OnInit {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private petitionService = inject(PetitionService);
+  private fb = inject(FormBuilder);
+
   errorMessage = '';
-  constructor(private auth: AuthService, private router: Router) {}
+  loginForm!: FormGroup;
+
+  ngOnInit() {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]]
+    });
+  }
+
+  // Cambiamos el nombre a 'login' para que coincida con tu lógica anterior
+  // o cambia el HTML a 'onSubmit()'
   login() {
-    this.errorMessage = ''; // Reseteamos errores previos
-    this.auth.login({ email: this.email, password: this.password })
-      .subscribe({
-        next: () => {
-// Si todo va bien, nos vamos a las peticiones
-          this.router.navigate(['/petitions']);
-        },
-        error: (err: { status: number; }) => {
-          console.error('LOGIN ERROR', err);
-          if (err.status === 401) {
-            this.errorMessage = 'El email o la contraseña son incorrectos.';
-            this.password = ''; // Borramos pass para facilitar reintento
-          } else {
-            this.errorMessage = 'Ocurrió un error inesperado. Inténtalo luego.';
-          }
-        }
-      });
+    if (this.loginForm.invalid) return;
+
+    this.errorMessage = ''; // Limpiar error al intentar
+    const credentials = this.loginForm.value;
+
+    this.auth.login(credentials).subscribe({
+      next: () => {
+        this.router.navigate(['/petitions']).then(() => {
+          this.petitionService.fetchPeticiones().subscribe();
+        });
+      },
+      error: (err) => {
+        this.errorMessage = 'Credenciales incorrectas o error de conexión';
+        console.error(err);
+      }
+    });
   }
 }

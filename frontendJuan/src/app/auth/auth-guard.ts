@@ -4,9 +4,14 @@ import { AuthService } from './auth';
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  if (!auth.isAuthenticated()) {
-    router.navigate(['/login']);
-    return false;
+
+  // Verificamos si hay token directamente para evitar el delay del estado interno
+  const token = localStorage.getItem('token');
+
+  if (auth.isAuthenticated() || !!token) {
+    return true;
   }
-  return true;
+
+  router.navigate(['/login']);
+  return false;
 };

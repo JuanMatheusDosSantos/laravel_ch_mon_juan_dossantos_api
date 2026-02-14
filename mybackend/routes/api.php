@@ -57,16 +57,16 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 // Peticiones Públicas
-Route::get('/peticiones', [PetitionController::class, 'index']);
-Route::get('/peticiones/{id}', [PetitionController::class, 'show']);
+Route::get('/petitions', [PetitionController::class, 'index']);
+Route::get('/petitions/{id}', [PetitionController::class, 'show']);
 // Rutas Protegidas (Requieren Token)
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']); // Si implementas refresh
-    Route::post('/peticiones', [PetitionController::class, 'store']);
+    Route::post('/petition', [PetitionController::class, 'store']);
 // IMPORTANTE: Update usa POST con _method por el tema de ficheros
-    Route::put('/peticiones/{id}', [PetitionController::class, 'update']);
-    Route::delete('/peticiones/{id}', [PetitionController::class, 'destroy']);
-    Route::post('/peticiones/firmar/{id}', [PetitionController::class, "sign"]);
+    Route::put('/petitions/{id}', [PetitionController::class, 'update']);
+    Route::delete('/petitions/{id}', [PetitionController::class, 'destroy']);
+    Route::post('/petitions/firmar/{id}', [PetitionController::class, "sign"]);
 });

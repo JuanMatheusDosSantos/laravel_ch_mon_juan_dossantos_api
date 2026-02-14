@@ -1,1 +1,66 @@
-<p>list-component works!</p>
+<div class="container">
+<!--  <div class="my-5">-->
+<!--    <div class="d-flex flex-wrap gap-2">-->
+<!--      @foreach($categories as $category)-->
+<!--      <a href="{{route("petitions.category",["id"=>$category->id])}}" class="btn btn-outline-primary">{{$category->name}}</a>-->
+<!--      @endforeach-->
+<!--    </div>-->
+<!--  </div>-->
+  <div class="my-5">
+    <h3><strong>Peticiones patrocinadas por otros usuarios de Change.org</strong></h3>
+
+    <div class="row g-4">
+      @for(p of peticionService.allPeticiones(); track p.id){
+        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+          <div class="card w-100 h-100 shadow-sm">
+            <a [routerLink]="['/petitions', p.id]" class="text-decoration-none text-black">
+
+              <img [src]="'assets/img/petitions/' + p.files?.[0]?.file_path"
+                   [alt]="p.files?.[0]?.name"
+                   class="card-img-top">
+
+              <div class="card-body">
+                <p class="card-title">{{ p.title }}</p>
+                <p class="card-text"><strong>{{ p.description }}</strong>.</p>
+
+                <div class="d-flex align-items-center mb-3">
+                  <img src="assets/img/pencil.png" alt="pencil" style="width: 20px;">
+                  <p class="text-primary m-0 ms-2">
+                    <strong>{{ p.signers }} firmas</strong>
+                  </p>
+                </div>
+
+                @if (authService.isLoggedIn()) {
+
+                  @if (authService.currentUser()?.id === p.user_id) {
+                    <button class="btn btn-outline-dark w-100 d-none">
+                      Firmar esta petición
+                    </button>
+                    <button (click)="delete(p.id); $event.stopPropagation()" class="btn btn-danger btn-sm w-100 mt-2">
+                      Eliminar mi petición
+                    </button>
+                  }
+                  @else if (p.signers?.includes(authService.currentUser()?.id)) {
+                    <button (click)="p.id && firmar(p.id); $event.preventDefault()" class="btn btn-dark w-100">
+                      Des-firmar esta petición
+                    </button>
+                  }
+                  @else {
+                    <button (click)="p.id && firmar(p.id); $event.preventDefault()" class="btn btn-outline-dark w-100">
+                      Firmar esta petición
+                    </button>
+                  }
+
+                } @else {
+                  <a routerLink="/login" class="btn btn-outline-dark w-100">
+                    Firma esta petición
+                  </a>
+                }
+              </div>
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

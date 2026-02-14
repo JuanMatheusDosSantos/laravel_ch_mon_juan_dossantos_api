@@ -1,6 +1,47 @@
-<p>login works!</p>
-<form (ngSubmit)="login()">
-  <input [(ngModel)]="email" name="email" />
-  <input [(ngModel)]="password" type="password" name="password" />
-  <button>Login</button>
-</form>
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-4">
+      <div class="card shadow">
+        <div class="card-body">
+          <h2 class="text-center mb-4">Iniciar Sesión</h2>
+
+          @if(errorMessage) {
+            <div class="alert alert-danger p-2 small">
+              {{ errorMessage }}
+            </div>
+          }
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                formControlName="email"
+                autocomplete="username">
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Contraseña</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                formControlName="password"
+                autocomplete="current-password">
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              [disabled]="loginForm.invalid">
+              Entrar
+            </button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

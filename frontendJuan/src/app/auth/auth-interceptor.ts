@@ -28,24 +28,58 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => err);
       }
 // ‐‐‐ CASO ESTÁNDAR: ERROR 401 (Token Caducado) ‐‐‐
+//       if (err.status === 401) {
+//         return auth.refreshToken().pipe(
+//           switchMap((res: any) => {
+// // Guardamos el nuevo token
+//             localStorage.setItem('access_token', res.access_token);
+// // Reintentamos la petición original con el nuevo token
+//             const newReq = req.clone({
+//               setHeaders: { Authorization: `Bearer ${res.access_token}` }
+//             });
+//             return next(newReq);
+//           }),
+//           catchError((refreshErr) => {
+// // Si el refresh falla, cerramos sesión
+//             auth.logout();
+//             return throwError(() => refreshErr);
+//           })
+//         );
+//       }
+
       if (err.status === 401) {
+        // 1. SI EL ERROR VIENE DE LOGIN O REFRESH, NO REINTENTAR
+        // Esto evita que el fallo de contraseña te mande a un bucle de refresh
+        if (req.url.includes('/login') || req.url.includes('/refresh')) {
+          return throwError(() => err);
+        }
+
+        // 2. SI NO TENEMOS TOKEN, NO HAY NADA QUE REFRESCAR
+        const currentToken = localStorage.getItem('access_token');
+        if (!currentToken) {
+          auth.logout().subscribe(); // Limpieza normal
+          return throwError(() => err);
+        }
+
+        // 3. INTENTO DE REFRESH (Solo para peticiones de datos normales)
         return auth.refreshToken().pipe(
           switchMap((res: any) => {
-// Guardamos el nuevo token
             localStorage.setItem('access_token', res.access_token);
-// Reintentamos la petición original con el nuevo token
             const newReq = req.clone({
               setHeaders: { Authorization: `Bearer ${res.access_token}` }
             });
             return next(newReq);
           }),
           catchError((refreshErr) => {
-// Si el refresh falla, cerramos sesión
-            auth.logout();
+            // Si el refresh falla, limpiamos localmente sin hacer peticiones HTTP
+            // para evitar el bucle infinito en el logout
+            localStorage.clear();
+            window.location.href = '/login';
             return throwError(() => refreshErr);
           })
         );
       }
+
 // Cualquier otro error (500, 404, etc), lo dejamos pasar
       return throwError(() => err);
     })

@@ -1,1 +1,216 @@
-<p>home works!</p>
+<div>
+  <div class="position-relative">
+    <img src="assets/img/background-home.svg" alt="" class="position-absolute start-25 w-50" style="z-index: -10;">
+    <div class="position-relative pt-5 container ">
+      <div class="mt-3 pt-5 align-content-center text-center">
+        <h1>El cambio comienza aqui.</h1>
+        <p>Únete a 567.908.560 personas que están impulsando un cambio real en sus comunidades.</p>
+        <div>
+          @if (authService.isLoggedIn()) {
+          <a href="/petitions/create" class="btn btn-warning mx-2">Crear una petición</a>
+          }
+          @else{
+          <a href="/login" class="btn btn-warning mx-2">Crear una petición</a>
+          }
+          <a href="" class="btn btn-light btn-outline-dark mx-2">Comenzar con IA</a>
+        </div>
+      </div>
+    </div>
+    <div class="carousel slider mt-2" id="carouselHome" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active " data-bs-interval="10000">
+          <a href="" class="d-flex justify-content-center">
+            <img src="assets/img/foto1Home.jpg" alt="" class="rounded-pop imgs w-25">
+            <div class="carousel-caption d-none d-md-block text-dark bg-gray w-15 mx-auto rounded-5 ">
+              <h5>¡Victoria!</h5>
+              <p>157.929 firmas.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item" data-bs-interval="5000">
+          <a href="" class="d-flex justify-content-center">
+            <img src="assets/img/foto2Home.webp" alt="" class="rounded-pop imgs w-25">
+            <div class="carousel-caption d-none d-md-block text-dark bg-gray w-15 mx-auto rounded-5 ">
+              <h5>¡Victoria!</h5>
+              <p>157.929 firmas.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item" data-bs-interval="5000">
+          <a href="" class="d-flex justify-content-center">
+            <img src="assets/img/foto3Home.webp" alt="" class="rounded-pop imgs w-25">
+            <div class="carousel-caption d-none d-md-block text-dark bg-gray w-15 mx-auto rounded-5 ">
+              <h5>¡Victoria!</h5>
+              <p>9141.336 firmas.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item" data-bs-interval="5000">
+          <a href="" class="d-flex justify-content-center">
+            <img src="assets/img/foto4Home.webp" alt="" class="rounded-pop imgs w-25">
+            <div class="carousel-caption d-none d-md-block text-dark bg-gray w-15 mx-auto rounded-5 ">
+              <h5>En tendencia</h5>
+              <p>192.219 firmas.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item" data-bs-interval="5000">
+          <a href="" class="d-flex justify-content-center">
+            <img src="assets/img/foto5Home.webp" alt="" class="rounded-pop imgs w-25">
+            <div class="carousel-caption d-none d-md-block text-dark bg-gray w-15 mx-auto rounded-5 ">
+              <h5>¡Victoria!</h5>
+              <p>162.845 firmas.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselHome" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselHome" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+  <div class="bg-graynt py-5 my-5">
+    <div class="container">
+      <div class="d-flex justify-content-center">
+        <h2><strong>Usar la plataforma de peticiones n.º 1 del mundo es fácil</strong></h2>
+      </div>
+
+      <div class="row paso-timeline mt-5">
+        <div class="col-lg-4 col-12 text-center paso-item">
+          <div class="d-flex justify-content-center">
+            <div class="paso-numero bg-primary text-white rounded-circle fw-bold">1</div>
+          </div>
+          <h4 class="mt-4 fs-5 fw-bold">Crea una petición en dos minutos</h4>
+          <p class="text-secondary fs-6">Más de 2.000 nuevas cada día</p>
+        </div>
+
+        <div class="col-lg-4 col-12 text-center paso-item">
+          <div class="d-flex justify-content-center">
+            <div class="paso-numero bg-primary text-white rounded-circle fw-bold">2</div>
+          </div>
+          <h4 class="mt-4 fs-5 fw-bold">Consigue apoyo gracias a nuestra gran comunidad</h4>
+          <p class="text-secondary fs-6">Más de 500.000 firmas diarias</p>
+        </div>
+
+        <div class="col-lg-4 col-12 text-center">
+          <div class="d-flex justify-content-center">
+            <div class="paso-numero bg-primary text-white rounded-circle fw-bold">3</div>
+          </div>
+          <h4 class="mt-4 fs-5 fw-bold">Llega hasta los responsables gracias a nuestra red</h4>
+          <p class="text-secondary fs-6">Más de 1.000 notificados a diario</p>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center">
+        <div class="dropdown">
+          <button class="btn text-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+            Lee nuestros consejos y guías sobre cómo crear una petición
+          </button>
+          <ul class="dropdown-menu text-primary bg-transparent w-100">
+            <li class="">
+              <a class="dropdown-item text-primary" href="#">Cómo iniciar una petición</a>
+            </li>
+            <li class="">
+              <a class="dropdown-item text-primary" href="#">Cómo recolectar firmas</a>
+            </li>
+            <li class="">
+              <a class="dropdown-item text-primary" href="#">Cómo hacer ruido con tu campaña</a>
+            </li>
+            <li class="">
+              <a class="dropdown-item text-primary" href="#">Cómo llegar a los medios</a>
+            </li>
+            <li class="">
+              <a class="dropdown-item text-primary" href="#">Cómo contactar con los responsables</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div>
+      <h2><strong>Apoya causas que te importan</strong></h2>
+      <p>Encuentra peticiones que te conmuevan y alza tu voz para lograr el cambio.</p>
+      <div class="d-flex">
+        <button type="button" class="btn btn-outline-primary me-2">Sanidad</button>
+        <button type="button" class="btn btn-outline-primary me-2">Animales</button>
+        <button type="button" class="btn btn-outline-primary me-2">Medio Ambiente</button>
+        <button type="button" class="btn btn-outline-primary me-2">Educacion</button>
+        <button type="button" class="btn btn-outline-primary">Justicia economica</button>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between my-2">
+      <div class="col-3 border shadow me-3">
+        <img src="assets/img/foto6Home.webp" alt="" class="w-100">
+        <div>
+          <h6 class="my-2"><strong>Mi hija se suicidó con 15 años. El bullying NO es cosa de niños > ¡LEY
+            ACOSO ESCOLAR YA!</strong></h6>
+          <div class="d-flex">
+            <img src="assets/img/pencil.png" alt="" style="width: 20px;">
+            <p class="text-primary m-0"><strong>260.613 firmas</strong></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-3 border shadow me-3">
+        <img src="assets/img/foto7Home.webp" alt="" class="w-100">
+        <div>
+          <h6 class="my-2"><strong>Mi hija se suicidó con 15 años. El bullying NO es cosa de niños > ¡LEY
+            ACOSO ESCOLAR YA!</strong></h6>
+          <div class="d-flex">
+            <img src="assets/img/pencil.png" alt="" style="width: 20px;">
+            <p class="text-primary m-0"><strong>58.554 firmas</strong></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-3 border shadow me-3">
+        <img src="assets/img/foto8Home.webp" alt="" class="w-100">
+        <div>
+          <h6 class="my-2"><strong>Mi hija se suicidó con 15 años. El bullying NO es cosa de niños > ¡LEY
+            ACOSO ESCOLAR YA!</strong></h6>
+          <div class="d-flex">
+            <img src="assets/img/pencil.png" alt="" style="width: 20px;">
+            <p class="text-primary m-0"><strong>11.485 firmas</strong></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-3 border shadow me-3">
+        <img src="assets/img/foto9Home.webp" alt="" class="w-100">
+        <div>
+          <h6 class="my-2"><strong>Mi hija se suicidó con 15 años. El bullying NO es cosa de niños > ¡LEY
+            ACOSO ESCOLAR YA!</strong></h6>
+          <div class="d-flex">
+            <img src="assets/img/pencil.png" alt="" style="width: 20px;">
+            <p class="text-primary m-0"><strong>31.8424 firmas</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-graynt my-5 d-flex">
+      <div class="w-50 align-content-center">
+        <h2>Apoya el cambio</h2>
+        <h2>Contribuye hoy</h2>
+        <p class="mt-3">Change.org es una organización independiente, financiada únicamente por millones de
+          usuarios
+          como tú. Colabora con Change para proteger el poder de las personas que marcan una
+          diferencia.</p>
+        <button type="button" class="btn btn-outline-dark">Contribuir</button>
+      </div>
+      <div class="w-50 ">
+        <img src="assets/img/foto10Home.webp" alt="" class="w-100">
+      </div>
+    </div>
+  </div>
+</div>

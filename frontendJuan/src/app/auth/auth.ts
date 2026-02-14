@@ -13,7 +13,11 @@ export class AuthService {
   isLoggedIn = signal<boolean>(!!localStorage.getItem('access_token'));
   user$ = this.userSubject.asObservable();
   currentUser = signal<any>(null);
+
+
   constructor(private http: HttpClient) {}
+
+
   login(credentials: { email: string; password: string }) {
     return this.http
       .post<LoginResponse>(`${this.api}/login`, credentials)
@@ -22,6 +26,8 @@ export class AuthService {
   register(data: { name: string; email: string; password: string }) {
     return this.http.post(`${this.api}/register`, data);
   }
+
+
   logout() {
 // Hacemos la petición al backend para invalidar el token allí
     return this.http.post(`${this.api}/logout`, {}).pipe(
@@ -40,6 +46,8 @@ export class AuthService {
   isAuthenticated(): boolean {
     return !!this.getAccessToken();
   }
+
+
   private storeTokens(res: LoginResponse) {
     console.log('LO QUE LLEGA DEL SERVIDOR:', res);
     localStorage.setItem('access_token', res.access_token);
@@ -52,6 +60,7 @@ export class AuthService {
       localStorage.setItem('user_data', JSON.stringify(res.user));
     }
   }
+
   private limpiarSesionLocal() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('user_data');
