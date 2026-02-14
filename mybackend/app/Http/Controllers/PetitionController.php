@@ -13,7 +13,7 @@ class PetitionController extends Controller
 {
     public function index()
     {
-        $count = Petition::all()->count();
+       // $count = Petition::all()->count();
 //        $petitions = Petition::paginate(10);
         $petitions = Petition::with('file')->get();
         return response()->json($petitions, 200);

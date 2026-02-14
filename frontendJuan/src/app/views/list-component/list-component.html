@@ -30,9 +30,9 @@
                   </p>
                 </div>
 
-                @if (authService.isLoggedIn()) {
+                @if (isLoggedIn()) {
 
-                  @if (authService.currentUser()?.id === p.user_id) {
+                  @if (currentUser()?.id === p.user_id) {
                     <button class="btn btn-outline-dark w-100 d-none">
                       Firmar esta petición
                     </button>

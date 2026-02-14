@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
 
   // Cambiamos el nombre a 'login' para que coincida con tu lógica anterior
   // o cambia el HTML a 'onSubmit()'
-  login() {
+  onSubmit() {
     if (this.loginForm.invalid) return;
 
     this.errorMessage = ''; // Limpiar error al intentar

@@ -27,15 +27,24 @@ export class PetitionService {
     this.loading.set(true);
     return this.http.get<any>(this.API_URL).pipe(
       map(res => {
-        const data = res.data ? res.data : res;
+        // 1. Extraer los datos (Laravel suele envolver en 'data')
+        const rawData = res.data ?? res;
+        const data = Array.isArray(rawData) ? rawData : [];
+
+        // 2. Normalizar cada petición
         return data.map((p: any) => {
-          // Si Laravel envía 'file' (por el with), lo metemos en tu array 'files'
-          if (p.file) { p.files = [p.file]; }
-          return p;
+          return {
+            ...p,
+            // Forzamos que 'files' sea un array siempre
+            // Si llega 'file' desde el back (with('file')), lo metemos dentro
+            files: p.files && p.files.length > 0
+              ? p.files
+              : (p.file ? [p.file] : [])
+          };
         });
       }),
-      tap(data => {
-        this.#peticiones.set(data);
+      tap(peticiones => {
+        this.#peticiones.set(peticiones);
         this.loading.set(false);
       })
     );
