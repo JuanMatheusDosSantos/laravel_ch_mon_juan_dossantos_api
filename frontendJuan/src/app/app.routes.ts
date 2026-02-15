@@ -21,5 +21,4 @@ export const routes: Routes = [
 { path: 'login', component: LoginComponent },
 { path: 'register', component: RegisterComponent },
 { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
-// Wildcard: Cualquier ruta no encontrada va al login (o a 404)
 { path: '**', component: HomeComponent, pathMatch: 'full'},];

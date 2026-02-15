@@ -60,8 +60,8 @@ class PetitionController extends Controller
                 "image" => "nullable|file|mimes:jpg,jpeg,png,webp"
             ]);
         } catch (\Exception $e) {
-//            return response()->json(["message" => "error", "la validación ha fallado, por favor, introduce correctamente los datos"], 400);
-            return response()->json(["message" => "error", $e->getMessage()], 400);
+            return response()->json(["message" => "error", "la validación ha fallado, por favor, introduce correctamente los datos"], 400);
+//            return response()->json(["message" => "error", $e->getMessage()], 400);
         }
         try {
             $petition = Petition::findOrFail($id);
@@ -160,7 +160,7 @@ class PetitionController extends Controller
         } catch (\Exception $e) {
             return response()->json(["message" => "error",
 //                "ha ocurrido un error"
-                $e
+                $e->getMessage()
             ], 400);
         }
         return false;
@@ -216,7 +216,11 @@ class PetitionController extends Controller
 //                return response()->json(['message' =>"error", 'Debes seleccionar una imagen'],400);
             }
         } catch (\Exception $e) {
-            return response()->json(['message' => "error", 'se ha producido un error a la hora de crear la peticion'], 400);
+            return response()->json(['message' => "error",
+//                'se ha producido un error a la hora de crear la peticion'
+            $e->getMessage()
+            ],
+                400);
         }
         return response()->json(["message" => "success", "se ha creado exitosamente la peticion"], 201);
     }
@@ -238,7 +242,7 @@ class PetitionController extends Controller
         $image = null;
         if ($request->hasFile("image")) {
             $image = time() . '.' . $request->image->extension();
-            $path = public_path('assets\img\petitions');
+            $path = public_path('storage\assets\img\petitions');
             $pathName = pathinfo($request->file("image")->getClientOriginalName(), PATHINFO_FILENAME);
             $temp = $request->file("image")->getPathname();
             if (!copy($temp, $path . DIRECTORY_SEPARATOR . $image)) {

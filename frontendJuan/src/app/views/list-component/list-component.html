@@ -14,10 +14,12 @@
         <div class="col-12 col-md-6 col-lg-4 col-xl-3">
           <div class="card w-100 h-100 shadow-sm">
             <a [routerLink]="['/petitions', p.id]" class="text-decoration-none text-black">
+              @if (p.files?.[0]!=null) {
 
-              <img [src]="'assets/img/petitions/' + p.files?.[0]?.file_path"
-                   [alt]="p.files?.[0]?.name"
-                   class="card-img-top">
+                <img [src]="baseImageUrl + p.files?.[0]?.file_path"
+                     [alt]="p.files?.[0]?.name"
+                     class="card-img-top">
+              }
 
               <div class="card-body">
                 <p class="card-title">{{ p.title }}</p>
@@ -53,7 +55,7 @@
                   }
 
                 } @else {
-                  <a routerLink="/login" class="btn btn-outline-dark w-100">
+                  <a href="/login" class="btn btn-outline-dark w-100">
                     Firma esta petición
                   </a>
                 }

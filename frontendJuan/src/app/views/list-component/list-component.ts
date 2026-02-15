@@ -15,13 +15,14 @@ import {Petition} from '../../models/petition';
     './list-component.css',
     '../../../assets/css/carouselHome.css',
     '../../../assets/css/general.css'
-
   ],
 })
 export class ListComponent {
   peticionService = inject(PetitionService);
   public authService = inject(AuthService);
   private route = inject(ActivatedRoute);
+  public baseImageUrl: string = 'http://localhost:8000/storage/assets/img/petitions/';
+
   peticiones: Petition[] = [];
   public cargando: boolean = true;
   public isLoggedIn = this.authService.isLoggedIn;

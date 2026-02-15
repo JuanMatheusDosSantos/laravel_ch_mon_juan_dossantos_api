@@ -65,7 +65,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']); // Si implementas refresh
-    Route::post('/petition', [PetitionController::class, 'store']);
+    Route::post('/petitions/petition', [PetitionController::class, 'store']);
 // IMPORTANTE: Update usa POST con _method por el tema de ficheros
 //    Route::get('/petitions/categories', [PetitionController::class, 'getCategories']);
     Route::put('/petitions/{id}', [PetitionController::class, 'update']);
