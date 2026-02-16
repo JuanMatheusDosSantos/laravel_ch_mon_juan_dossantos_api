@@ -75,7 +75,7 @@ export class EditComponent implements OnInit {
     fd.append('category', this.editForm.value.category);
 
     fd.append('status', this.editForm.value.status || 'pending');
-    fd.append('signers', '0'); // O el valor que tenga la petición
+    fd.append('signers', '0');
 
     if (this.selectedFile) {
       fd.append('image', this.selectedFile);

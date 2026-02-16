@@ -37,20 +37,9 @@ export class ListComponent {
       this.currentUser = user ? user : null;
     });
     this.route.queryParams.subscribe(params => {
-      const busqueda = params['q'];
       this.cargando = true;
       this.peticionService.fetchPeticiones().subscribe({
         next: (data) => {
-          // if (busqueda) {
-          //   this.peticiones = data.filter((p: any) =>
-          //     p.title.toLowerCase().includes(busqueda.toLowerCase()) ||
-          //     p.description.toLowerCase().includes(busqueda.toLowerCase())
-          //   );
-          // } else {
-          //   this.peticiones = data;
-          //   console.log(data)
-          // }
-
           this.peticiones = data
           console.log(data)
 

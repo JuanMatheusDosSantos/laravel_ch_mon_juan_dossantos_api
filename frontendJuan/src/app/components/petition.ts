@@ -16,16 +16,12 @@ export class PetitionService {
     this.loading.set(true);
     return this.http.get<any>(this.API_URL).pipe(
       map(res => {
-        // 1. Extraer los datos (Laravel suele envolver en 'data')
         const rawData = res.data ?? res;
         const data = Array.isArray(rawData) ? rawData : [];
 
-        // 2. Normalizar cada petición
         return data.map((p: any) => {
           return {
             ...p,
-            // Forzamos que 'files' sea un array siempre
-            // Si llega 'file' desde el back (with('file')), lo metemos dentro
             files: p.files && p.files.length > 0
               ? p.files
               : (p.file ? [p.file] : [])
@@ -60,11 +56,9 @@ export class PetitionService {
     );
   }
   update(id: number, formData: FormData) {
-// Truco para que Laravel acepte archivos en actualización
     formData.append('_method', 'PUT');
     return this.http.post<{ data: Petition }>(`${this.API_URL}/${id}`, formData).pipe(
       tap(res => {
-// Actualizamos solo la petición modificada en la lista local
         this.#peticiones.update(list =>
           list.map(p => p.id === id ? res.data : p)
         );
@@ -74,7 +68,6 @@ export class PetitionService {
   delete(id: number) {
     return this.http.delete(`${this.API_URL}/${id}`).pipe(
       tap(() => {
-// Eliminamos la petición de la lista local
         this.#peticiones.update(list => list.filter(p => p.id !== id));
       })
     );
