@@ -78,8 +78,8 @@ class PetitionController extends Controller
                 $petition->description = $request->description;
             }
             try {
-                if (!is_null($request->image)) {
-                    $this->fileReUpload($request, $petition->id);
+                if (!is_null($request->image))
+                    $this->fileReUpload($request, $petition->id);{
                 }
             } catch (\Exception $e) {
                 return response()->json([
@@ -132,12 +132,12 @@ class PetitionController extends Controller
     {
         try {
             $imagenOriginal = File::where("petition_id", $id)->first();
-            $original = public_path("assets/img/petitions/" . $imagenOriginal->file_path);
+            $original = public_path("/storage/assets/img/petitions/" . $imagenOriginal->file_path);
             if (FileFacade::exists($original)) {
                 FileFacade::delete($original);
             }
             $image = time() . '.' . $request->image->extension();
-            $path = public_path('assets\img\petitions');
+            $path = public_path('\storage\assets\img\petitions');
             $pathName = pathinfo($request->file("image")->getClientOriginalName(), PATHINFO_FILENAME);
             $temp = $request->file("image")->getPathname();
             if (!copy($temp, $path . DIRECTORY_SEPARATOR . $image)) {
