@@ -9,7 +9,6 @@ Route::post('/login', [AuthController::class, 'login']);
 // Peticiones Públicas
 Route::get('/petitions', [PetitionController::class, 'index']);
 Route::get('/petitions/categories', [PetitionController::class, 'getCategories']);
-Route::get('/petitions/{id}', [PetitionController::class, 'show']);
 // Rutas Protegidas (Requieren Token)
 Route::middleware('auth:api')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -18,7 +17,11 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/petitions/petition', [PetitionController::class, 'store']);
 // IMPORTANTE: Update usa POST con _method por el tema de ficheros
 //    Route::get('/petitions/categories', [PetitionController::class, 'getCategories']);
+    Route::get("/petitions/mypetitions",[PetitionController::class,"listMine"]);
+    Route::get("/petitions/mysignatures",[PetitionController::class,"mysignatures"]);
     Route::put('/petitions/{id}', [PetitionController::class, 'update']);
     Route::delete('/petitions/{id}', [PetitionController::class, 'destroy']);
     Route::post('/petitions/firmar/{id}', [PetitionController::class, "sign"]);
 });
+
+Route::get('/petitions/{id}', [PetitionController::class, 'show']);

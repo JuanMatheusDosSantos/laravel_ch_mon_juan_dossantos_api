@@ -1,9 +1,43 @@
 <?php
+//
+//use Illuminate\Auth\AuthenticationException;
+//use Illuminate\Foundation\Application;
+//use Illuminate\Foundation\Configuration\Exceptions;
+//use Illuminate\Foundation\Configuration\Middleware;
+//use Illuminate\Http\Request;
+//
+//return Application::configure(basePath: dirname(__DIR__))
+//    ->withRouting(
+//        api: __DIR__ . '/../routes/api.php',
+//        commands: __DIR__ . '/../routes/console.php',
+//        health: '/up',
+//    )
+//    ->withMiddleware(function (Middleware $middleware): void {
+////
+//    })
+//    ->withExceptions(function (Exceptions $exceptions): void {
+//// Puede no venir el código de a continuación
+//        $exceptions->render(function (AuthenticationException $e, Request $request) {
+//            if ($request->is('api/*')) {
+//                return response()->json([
+//                    'message' => $e->getMessage(),
+//                ], 401);
+//            }
+//            return response()->json(['message' => 'Unauthenticated'], 401);
+//
+//        });
+//
+//    })->create();
+//
 
+
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,16 +47,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-//
+        $middleware->redirectGuestsTo(fn() => null); // 👈 nunca redirigir
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-// Puede no venir el código de a continuación
-//        $exceptions->render(function (AuthenticationException $e, Request $request) {
-//            if ($request->is('api/*')) {
-//                return response()->json([
-//                    'message' => $e->getMessage(),
-//                ], 401);
-//            }
-//        });
-    })->create();
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            return response()->json([
+                'message' => 'Not Authenticated',
+            ], 401);
+        });
 
+        $exceptions->render(function (AccessDeniedHttpException  $e) {
+            return response()->json([
+                'message' => 'No tienes permiso para realizar esta acción.',
+            ], 403);
+        });
+
+    })->create();

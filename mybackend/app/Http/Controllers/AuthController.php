@@ -14,18 +14,32 @@ class AuthController extends Controller
     /**
      * Login y generación del token JWT
      */
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
+    public function login(Request $request){
+        $validator = Validator::make($request->all(),[
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|min:6',
         ]);
-        if (!$token = Auth::attempt($credentials)) {
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $token = auth('api')->attempt($request->only('email', 'password'));
+
+        if (!$token){
             return response()->json([
-                'message' => 'Credenciales incorrectas'
+                'error' => 'Unauthorized. Either email or password is wrong.'
             ], 401);
         }
-        return $this->respondWithToken($token);
+
+        $user = Auth::user();
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'user' => $user,
+            'expires_in' => env('JWT_TTL') * 60,
+        ]);
     }
 
     /**

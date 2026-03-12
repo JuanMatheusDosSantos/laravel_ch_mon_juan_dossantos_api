@@ -5,17 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\File;
 use App\Models\Petition;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File as FileFacade;
+use App\Http\Controllers\Controller;
+
+
 
 class PetitionController extends Controller
 {
     public function index()
     {
-       // $count = Petition::all()->count();
+        // $count = Petition::all()->count();
 //        $petitions = Petition::paginate(10);
-        $petitions = Petition::with('file',"user")->get();
+        $petitions = Petition::with('file', "user")->get();
         return response()->json($petitions, 200);
     }
 
@@ -28,7 +32,7 @@ class PetitionController extends Controller
     function show($id)
     {
         try {
-            $petition = Petition::with('file',"user")->findOrFail($id);
+            $petition = Petition::with('file', "user")->findOrFail($id);
         } catch (\Exception $e) {
             return response()->json(["message" => "error", "no se ha podido encontrar la peticion"], 404);
         }
@@ -38,12 +42,18 @@ class PetitionController extends Controller
     function destroy($id)
     {
         try {
-            $name = Petition::findOrFail($id)->name;
-            Petition::findOrFail($id)->delete();
+
+            $petition = Petition::findOrFail($id);
+
+
         } catch (\Exception $e) {
             return response()->json(["message" => "error", "no se ha podido encontrar la petición"], 400);
         }
-        return response()->json("se ha eliminado la publicación $name", 200);
+
+        $this->authorize('delete', $petition);
+
+        $petition->delete();
+        return response()->json(["se ha eliminado la publicación $petition->name"], 200);
     }
 
     function update(Request $request, $id)
@@ -65,11 +75,11 @@ class PetitionController extends Controller
         }
         try {
             $petition = Petition::findOrFail($id);
-        }catch (\Exception $e){
-            return response()->json(["hubo un error"],401);
+        } catch (\Exception $e) {
+            return response()->json(["hubo un error"], 401);
         }
         // Autorización (Policy)
-//        $this->authorize('update', $petition);
+        $this->authorize('update', $petition);
         try {
             if (!is_null($request->title)) {
                 $petition->title = strtolower($request->title);
@@ -79,7 +89,8 @@ class PetitionController extends Controller
             }
             try {
                 if (!is_null($request->image))
-                    $this->fileReUpload($request, $petition->id);{
+                    $this->fileReUpload($request, $petition->id);
+                {
                 }
             } catch (\Exception $e) {
                 return response()->json([
@@ -218,7 +229,7 @@ class PetitionController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => "error",
 //                'se ha producido un error a la hora de crear la peticion'
-            $e->getMessage()
+                $e->getMessage()
             ],
                 400);
         }
@@ -261,23 +272,48 @@ class PetitionController extends Controller
         return false;
     }
 
-function sign($id)
-{
+    function sign($id)
+    {
 
-    try {
-        $petition = Petition::findOrFail($id);
-        $userId = Auth::id();
-        if (!$petition->userSigners->contains(Auth::id())) {
-            $petition->userSigners()->attach($userId);
-            $petition->signers = $petition->signers + 1;
-        } else {
-            $petition->userSigners()->detach($userId);
-            $petition->signers = $petition->signers - 1;
+        try {
+            $petition = Petition::findOrFail($id);
+            $userId = Auth::id();
+            if (!$petition->userSigners->contains(Auth::id())) {
+                $petition->userSigners()->attach($userId);
+                $petition->signers = $petition->signers + 1;
+            } else {
+                $petition->userSigners()->detach($userId);
+                $petition->signers = $petition->signers - 1;
+            }
+            $petition->save();
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 400);
         }
-        $petition->save();
-    } catch (\Exception $e) {
-        return back()->withError($e->getMessage())->withInput();
+        return response()->json([
+            'message' => 'se ha firmado la peticion'
+        ], 200);
     }
-    return redirect()->back();
-}
+
+    function listMine()
+    {
+            $user = Auth::id();
+            try{
+            $petitions = Petition::where("user_id", $user)->get();
+            return response()->json($petitions);
+        }catch (\Exception $exception){
+            return response()->json(["ha habido un error a la hora de mostrar tus peticiones"],500);
+        }
+    }
+
+    function mysignatures()
+    {
+        $user = Auth::user();
+        try{
+            $petitions =  $user->signedPetitions()->get();
+            return response()->json($petitions);
+        }catch (\Exception $exception){
+            return response()->json(["ha habido un error a la hora de mostrar tus peticiones"],500);
+        }
+    }
+
 }

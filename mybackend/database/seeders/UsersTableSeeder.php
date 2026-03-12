@@ -71,6 +71,15 @@ class UsersTableSeeder extends Seeder
                 "role_id" => false,
                 "created_at" => "2025-12-20 18:27:00",
                 "updated_at" => "2025-12-20 18:27:00",
+            ],
+            [
+                "id" => 7,
+                "name" => "pepe",
+                "email" => "prueba3@gmail.com",
+                "password" => bcrypt("si1234"),
+                "role_id" => false,
+                "created_at" => "2025-12-20 18:27:00",
+                "updated_at" => "2025-12-20 18:27:00",
             ]
         ]);
 
