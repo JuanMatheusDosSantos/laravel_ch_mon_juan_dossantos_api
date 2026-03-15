@@ -1,9 +1,9 @@
-import {Component, inject} from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {PetitionService} from '../../components/petition';
 import {AuthService} from '../../auth/auth';
-import {Petition} from '../../models/petition';
+import {Categoria, Petition} from '../../models/petition';
 
 
 @Component({
@@ -23,16 +23,24 @@ export class ListComponent {
   private route = inject(ActivatedRoute);
   public baseImageUrl: string = 'http://localhost:8000/storage/assets/img/petitions/';
 
-  peticiones: Petition[] = [];
+  // peticiones: Petition[] = [];
+  peticiones = signal<Petition[]>([]);
+
+  categories: Categoria[]=[];
+
+  searchQuery = signal('');
+  categoriaSeleccionada = signal('');
+
+  filtroFirmado = signal('');
+
   public cargando: boolean = true;
   public isLoggedIn = this.authService.isLoggedIn;
-
 
   public currentUser: any | null=null;
 
 
   ngOnInit(): void {
-    this.authService.loadUserIfNeeded();
+    // this.authService.initSession();
     this.authService.user$.subscribe(user => {
       this.currentUser = user ? user : null;
     });
@@ -40,9 +48,15 @@ export class ListComponent {
       this.cargando = true;
       this.peticionService.fetchPeticiones().subscribe({
         next: (data) => {
-          this.peticiones = data
+          this.peticiones.set(data)
           console.log(data)
-
+          // console.log(data[0].category_count)
+          this.peticionService.getCategories().subscribe({
+            next:(data)=>{
+              this.categories=data
+              console.log(data)
+            }
+          })
           this.cargando = false;
         },
         error: (err) => {
@@ -57,7 +71,7 @@ export class ListComponent {
     if (confirm('¿Seguro?')) {
       this.peticionService.delete(id).subscribe({
         error: (err) => alert('No puedes borrar esto (quizás no eres el dueño)'),
-        next: () => this.peticiones = this.peticiones.filter(p => p.id !== id)
+        next: () => this.peticiones.update(ps=>ps.filter(p => p.id !== id))
       });
     }
   }
@@ -66,9 +80,25 @@ export class ListComponent {
     this.peticionService.firmar(id).subscribe({
       next: () => {
         // Recargamos la lista para que se actualicen los firmantes
-        this.peticionService.fetchPeticiones().subscribe(data => this.peticiones = data);
+        this.peticionService.fetchPeticiones().subscribe(data => this.peticiones.set(data));
       },
       error: (err) => console.error('Error al firmar', err)
     });
   }
+  peticionesFiltradas=computed<Petition[]>(()=>
+  this.peticiones().filter(p=>{
+    const buscador=!this.searchQuery()||p.title.toLowerCase().includes(this.searchQuery().toLowerCase())
+      ||p.description.toLowerCase().includes(this.searchQuery().toLowerCase())
+    const categorias=!this.categoriaSeleccionada()||p.category_id?.toString()==this.categoriaSeleccionada()
+
+    const yaFirmada = p .signers === this.currentUser?.id;
+
+    const estaFirmado=!this.filtroFirmado()||
+      (this.filtroFirmado() === 'firmada' && yaFirmada) ||
+      (this.filtroFirmado() === 'no_firmada' && !yaFirmada);
+
+    return buscador && categorias && estaFirmado;
+
+  })
+  )
 }

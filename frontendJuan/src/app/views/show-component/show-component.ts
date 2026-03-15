@@ -1,9 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { PetitionService } from '../../components/petition'; // Verifica esta ruta
-import { AuthService } from '../../auth/auth';                // Verifica esta ruta
-import { Petition } from '../../models/petition';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {PetitionService} from '../../components/petition'; // Verifica esta ruta
+import {AuthService} from '../../auth/auth';                // Verifica esta ruta
+import {Petition} from '../../models/petition';
 
 @Component({
   selector: 'app-show-component',
@@ -27,12 +27,17 @@ export class ShowComponent implements OnInit {
   public loading = signal(true);
   public isLoggedIn = this.authService.isLoggedIn;
 
+  public currentUser: any | null = null;
 
   // AÑADE ESTA LÍNEA
 
-  public currentUserId = this.authService.currentUser;
   ngOnInit(): void {
-    this.authService.loadUserIfNeeded();
+    // this.authService.initSession();
+
+    this.authService.user$.subscribe(user => {
+      this.currentUser = user ? user : null;
+    });
+
     const id = Number(this.route.snapshot.paramMap.get('id'));
     // 2. Cargamos la petición
     if (id) {
@@ -49,13 +54,15 @@ export class ShowComponent implements OnInit {
     }
   }
 
-  getImagenUrl(): string {
+  getImagenUrl(): string | [] {
+    let file;
     const pet = this.peticion();
-    console.log('Datos de la petición en imagen:', pet); // <--- AÑADE ESTO
 
+    let finalUrl: [] | any = []
     if (pet && pet.files && pet.files.length > 0) {
-      const finalUrl = `http://localhost:8000/storage/assets/img/petitions/${pet.files[0].file_path.replace('storage/', '')}`;
-      console.log('URL Generada:', finalUrl); // <--- Y ESTO
+      for (file of pet.files) {
+        finalUrl = [...finalUrl, `http://localhost:8000/storage/assets/img/petitions/${file.file_path.replace('storage/', '')}`];
+      }
       return finalUrl;
     }
     return 'assets/no-image.png';
@@ -69,4 +76,28 @@ export class ShowComponent implements OnInit {
       });
     }
   }
+
+  get isSigned() {
+    const pet = this.peticion()
+    return pet?.signers?.some((s: any) => s.id === this.currentUser.id)
+  }
+
+  recargar() {
+    window.location.reload()
+  }
+
+  firmar(id: number) {
+    this.peticionService.firmar(id).subscribe(
+      {
+        next: () => window.location.reload()
+      })
+  }
+
+  desFirmar(id: number) {
+    this.peticionService.desFirmar(id).subscribe(
+      {
+        next: () => window.location.reload()
+      })
+  }
+
 }

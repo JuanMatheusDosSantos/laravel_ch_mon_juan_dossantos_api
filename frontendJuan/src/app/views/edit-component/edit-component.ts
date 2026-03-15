@@ -18,10 +18,10 @@ export class EditComponent implements OnInit {
 
   editForm!: FormGroup;
   petitionId!: number;
-  selectedFile: File | null = null;
   errorMessage: string = '';
   loading: boolean = false;
   public categoria: Categoria[] = [];
+  files:File[]=[]
 
   constructor() {
     this.editForm = this.fb.group({
@@ -49,7 +49,7 @@ export class EditComponent implements OnInit {
             title: res.title,
             description: res.description,
             destinatary: res.destinatary,
-            category: res.category,
+            category: res.category_id,
             status: 'pending',
           });
         }
@@ -57,8 +57,8 @@ export class EditComponent implements OnInit {
     }
   }
   onFileChange(event: any): void {
-    if (event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
+    if (event.target.files && event.target.files.length > 0) {
+      this.files=Array.from(event.target.files)
     }
   }
 
@@ -77,8 +77,10 @@ export class EditComponent implements OnInit {
     fd.append('status', this.editForm.value.status || 'pending');
     fd.append('signers', '0');
 
-    if (this.selectedFile) {
-      fd.append('image', this.selectedFile);
+    if (this.files){
+      for (let i=0; i<this.files.length;i++){
+        fd.append("files[]",this.files[i])
+      }
     }
 
     this.peticionService.update(this.petitionId, fd).subscribe({
@@ -91,5 +93,8 @@ export class EditComponent implements OnInit {
         console.error('Error de validación en Laravel:', err.error);
       }
     });
+  }
+  compareFn(c1: any, c2: any): boolean {
+    return c1 && c2 ? c1.id === c2.id : c1 === c2;
   }
 }

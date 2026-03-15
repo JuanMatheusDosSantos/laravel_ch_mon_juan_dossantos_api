@@ -14,43 +14,36 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   }
   return next(request).pipe(
     catchError((err: HttpErrorResponse) => {
-// ‐‐‐ CASO CRÍTICO: FALLO EN LOGIN ‐‐‐
-// Si estamos intentando entrar y falla, NO hacemos nada raro.
-// Simplemente devolvemos el error para que el componente Login lo muestre.
+
+
       if (req.url.includes('/login') && err.status === 401) {
         return throwError(() => err);
       }
-// ‐‐‐ CASO CRÍTICO: FALLO EN REFRESH ‐‐‐
-// Si el intento de refrescar el token falla, es game over.
-// Hacemos logout forzoso (limpiar localStorage y redirigir).
+
+
+      // if (req.url.includes('/refresh')) {
+      //   auth.logout(); // Asumo que esto limpia y redirige
+      //   return throwError(() => err);
+      // }
+
       if (req.url.includes('/refresh')) {
-        auth.logout(); // Asumo que esto limpia y redirige
+        console.log('refresh falló, status:', err.status);
+        localStorage.clear();
+        // window.location.href = '/login';
         return throwError(() => err);
       }
-// ‐‐‐ CASO ESTÁNDAR: ERROR 401 (Token Caducado) ‐‐‐
-//       if (err.status === 401) {
-//         return auth.refreshToken().pipe(
-//           switchMap((res: any) => {
-// // Guardamos el nuevo token
-//             localStorage.setItem('access_token', res.access_token);
-// // Reintentamos la petición original con el nuevo token
-//             const newReq = req.clone({
-//               setHeaders: { Authorization: `Bearer ${res.access_token}` }
-//             });
-//             return next(newReq);
-//           }),
-//           catchError((refreshErr) => {
-// // Si el refresh falla, cerramos sesión
-//             auth.logout();
-//             return throwError(() => refreshErr);
-//           })
-//         );
-//       }
 
       if (err.status === 401) {
         // 1. SI EL ERROR VIENE DE LOGIN O REFRESH, NO REINTENTAR
         // Esto evita que el fallo de contraseña te mande a un bucle de refresh
-        if (req.url.includes('/login') || req.url.includes('/refresh')) {
+        // if (req.url.includes('/login') || req.url.includes('/refresh')) {
+        //   return throwError(() => err);
+        // }
+
+        if (req.url.includes('/login') || req.url.includes('/refresh') || req.url.includes('/logout')) {
+          // 👆 Agregá /logout también para cortar el bucle
+          localStorage.clear();
+          window.location.href = '/login';
           return throwError(() => err);
         }
 
@@ -62,14 +55,24 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
         }
 
         // 3. INTENTO DE REFRESH (Solo para peticiones de datos normales)
+        // return auth.refreshToken().pipe(
+        //   switchMap((res: any) => {
+        //     localStorage.setItem('access_token', res.access_token);
+        //     const newReq = req.clone({
+        //       setHeaders: { Authorization: `Bearer ${res.access_token}` }
+        //     });
+        //     return next(newReq);
+        //   }),
+
         return auth.refreshToken().pipe(
           switchMap((res: any) => {
             localStorage.setItem('access_token', res.access_token);
-            const newReq = req.clone({
+            const newReq = req.clone({  // 👈 usa req, que es la original sin token
               setHeaders: { Authorization: `Bearer ${res.access_token}` }
             });
             return next(newReq);
           }),
+
           catchError((refreshErr) => {
             // Si el refresh falla, limpiamos localmente sin hacer peticiones HTTP
             // para evitar el bucle infinito en el logout

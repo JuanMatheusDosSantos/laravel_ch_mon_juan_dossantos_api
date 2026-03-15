@@ -7,10 +7,33 @@
 <!--    </div>-->
 <!--  </div>-->
   <div class="my-5">
-    <h3><strong>Peticiones patrocinadas por otros usuarios de Change.org</strong></h3>
+        <!-- Filtros y búsqueda -->
+        <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+          <input
+            type="text"
+            class="form-control flex-grow-1"
+            placeholder="Buscar peticiones..."
+            (input)="searchQuery.set($any($event.target).value)"
+          />
+          <select class="form-select w-auto" (change)="categoriaSeleccionada.set($any($event.target).value)">
+            <option value="">Todas las categorías</option>
+            @for(cat of categories; track cat.id) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
+          <select class="form-select w-auto" (change)="filtroFirmado.set($any($event.target).value)">
+            <option value="">Todas las peticiones</option>
+            <option value="firmada">Ya firmadas</option>
+            <option value="no_firmada">No firmadas</option>
+          </select>
+        </div>
+
+        <h3><strong>Peticiones patrocinadas por otros usuarios de Change.org</strong></h3>
+
+        <!--    <h3><strong>Peticiones patrocinadas por otros usuarios de Change.org</strong></h3>-->
 
     <div class="row g-4">
-      @for(p of peticiones; track p.id){
+      @for(p of peticionesFiltradas(); track p.id){
         <div class="col-12 col-md-6 col-lg-4 col-xl-3">
           <div class="card w-100 h-100 shadow-sm">
             <a [routerLink]="['/petitions', p.id]" class="text-decoration-none text-black">

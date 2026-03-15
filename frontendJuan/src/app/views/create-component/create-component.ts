@@ -21,6 +21,7 @@ export class CreateComponent implements OnInit {
   errorMessage: string = '';
   loading: boolean = false;
   public categoria: Categoria[] = [];
+  files:File[]=[]
 
   constructor() {
     this.createForm = this.fb.group({
@@ -41,10 +42,16 @@ export class CreateComponent implements OnInit {
     });
   }
 
-  onFileChange(event: any): void {
-    if (event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
-    }
+  // onFileChange(event: any): void {
+  //   if (event.target.files.length > 0) {
+  //     this.selectedFile = event.target.files[0];
+  //   }
+  // }
+
+  onFileChange(event:any){
+      if (event.target.files && event.target.files.length > 0) {
+        this.files=Array.from(event.target.files)
+      }
   }
 
   onSubmit(): void {
@@ -66,10 +73,14 @@ export class CreateComponent implements OnInit {
     fd.append('status', 'pending');
     fd.append('signers', '0');
 
-    if (this.selectedFile) {
-      fd.append('image', this.selectedFile);
+    // if (this.selectedFile) {
+    //   fd.append('image', this.selectedFile);
+    // }
+    if (this.files){
+      for (let i=0; i<this.files.length;i++){
+        fd.append("files[]",this.files[i])
+      }
     }
-
     // Llamamos al método create (POST) del servicio
     this.peticionService.create(fd).subscribe({
       next: (res) => {

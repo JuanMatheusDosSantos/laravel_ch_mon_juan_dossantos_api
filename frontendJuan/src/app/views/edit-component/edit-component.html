@@ -37,7 +37,7 @@
 
       <div class="mb-4 text-start">
         <label for="image" class="form-label">Añade una imagen</label>
-        <input type="file" (change)="onFileChange($event)" id="image" accept="image/*" class="form-control">
+        <input type="file" (change)="onFileChange($event)" id="image" accept="image/*" class="form-control" multiple>
       </div>
 
       <button type="submit" class="btn btn-outline-primary w-100" [disabled]="editForm.invalid || loading">

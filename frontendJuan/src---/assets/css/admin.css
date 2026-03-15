@@ -1,0 +1,92 @@
+:root {
+    --sidebar-width: 250px; /* Ancho de la barra lateral */
+    --rojo-change: #e53238; /* Color rojo vibrante */
+}
+
+/* 1. Estructura Principal del Layout */
+body {
+    display: flex; /* Para poner sidebar y contenido uno al lado del otro */
+    min-height: 100vh;
+    overflow-x: hidden;
+    margin: 0; /* Asegura que no haya márgenes externos */
+}
+
+/* 2. Sidebar (Barra Lateral) */
+.sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background-color: var(--rojo-change);
+    color: white;
+    padding: 0;
+    position: sticky; /* Mantener la barra lateral visible al hacer scroll */
+    top: 0;
+    height: 100vh; /* Ocupa la altura completa de la ventana */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+    background-color: #d02c31;
+    padding: 15px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.admin-profile {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.admin-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 5px;
+    border: 2px solid white;
+}
+
+.sidebar-menu .nav-link {
+    color: white;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-menu .nav-link:hover, .sidebar-menu .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-left: 3px solid white;
+}
+
+/* 3. Contenido Principal */
+.main-content {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    padding: 0;
+    display: flex;
+    flex-direction: column; /* Para que la topbar esté encima del contenido yield */
+}
+
+/* 4. Topbar (Barra Superior) */
+.topbar {
+    background-color: white;
+    padding: 10px 20px;
+    border-bottom: 1px solid #eee;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* 5. Estilos de la tabla */
+.btn-action-group .btn {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Ajuste para que el contenido de la tabla no tenga padding doble */
+.content-wrapper {
+    padding: 1.5rem; /* El padding que estaba en la etiqueta <main> */
+}

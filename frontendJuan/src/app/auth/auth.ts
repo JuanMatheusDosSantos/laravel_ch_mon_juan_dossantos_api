@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, finalize, tap } from 'rxjs';
+import {BehaviorSubject, catchError, finalize, of, switchMap, tap} from 'rxjs';
 import { LoginResponse, User } from './auth.model';
 import { Router } from '@angular/router';
 @Injectable({ providedIn: 'root' })
@@ -16,7 +16,38 @@ export class AuthService {
 
 
   constructor(private http: HttpClient) {}
+  // initSession() {
+  //   const token = this.getAccessToken();
+  //   if (!token) return;
+  //
+  //   // Intentamos refrescar primero, luego cargamos el perfil
+  //   this.refreshToken().pipe(
+  //     catchError(() => {
+  //       this.limpiarSesionLocal();
+  //       return of(null);
+  //     }),
+  //     switchMap(res => {
+  //       if (!res) return of(null);
+  //       return this.getProfile();
+  //     }),
+  //     catchError(() => {
+  //       this.limpiarSesionLocal();
+  //       return of(null);
+  //     })
+  //   ).subscribe();
+  // }
 
+  initSession() {
+    const token = this.getAccessToken();
+    if (!token) return;
+
+    this.refreshToken().pipe(
+      catchError(() => {
+        this.limpiarSesionLocal();
+        return of(null);
+      })
+    ).subscribe();
+  }
 
   login(credentials: { email: string; password: string }) {
     return this.http
@@ -76,16 +107,33 @@ export class AuthService {
   getAccessToken() {
     return localStorage.getItem('access_token');
   }
+  // refreshToken() {
+  //   return this.http.post<{ access_token: string }>(
+  //     `${this.api}/refresh`,
+  //     {}
+  //   ).pipe(
+  //     tap(res => {
+  //       localStorage.setItem('access_token', res.access_token);
+  //     })
+  //   );
+  // }
+
   refreshToken() {
-    return this.http.post<{ access_token: string }>(
+    return this.http.post<{ access_token: string; token_type: string; expires_in: number; user: User }>(
       `${this.api}/refresh`,
       {}
     ).pipe(
       tap(res => {
         localStorage.setItem('access_token', res.access_token);
+        if (res.user) {
+          this.currentUser.set(res.user);
+          this.userSubject.next(res.user);
+          this.isLoggedIn.set(true);
+        }
       })
     );
   }
+
   loadUserIfNeeded() {
     if (this.getAccessToken() && !this.userSubject.value) {
       this.getProfile().subscribe({
