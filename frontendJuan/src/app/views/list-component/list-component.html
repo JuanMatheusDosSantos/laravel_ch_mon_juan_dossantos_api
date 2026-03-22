@@ -13,15 +13,15 @@
             type="text"
             class="form-control flex-grow-1"
             placeholder="Buscar peticiones..."
-            (input)="searchQuery.set($any($event.target).value)"
+            (input)="aplicarFiltro('search',$any($event.target).value)"
           />
-          <select class="form-select w-auto" (change)="categoriaSeleccionada.set($any($event.target).value)">
+          <select class="form-select w-auto" (change)="aplicarFiltro('categoria',$any($event.target).value)">
             <option value="">Todas las categorías</option>
             @for(cat of categories; track cat.id) {
               <option [value]="cat.id">{{ cat.name }}</option>
             }
           </select>
-          <select class="form-select w-auto" (change)="filtroFirmado.set($any($event.target).value)">
+          <select class="form-select w-auto" (change)="aplicarFiltro('firmado',$any($event.target).value)">
             <option value="">Todas las peticiones</option>
             <option value="firmada">Ya firmadas</option>
             <option value="no_firmada">No firmadas</option>
@@ -33,7 +33,7 @@
         <!--    <h3><strong>Peticiones patrocinadas por otros usuarios de Change.org</strong></h3>-->
 
     <div class="row g-4">
-      @for(p of peticionesFiltradas(); track p.id){
+      @for(p of peticionesPaginadas(); track p.id){
         <div class="col-12 col-md-6 col-lg-4 col-xl-3">
           <div class="card w-100 h-100 shadow-sm">
             <a [routerLink]="['/petitions', p.id]" class="text-decoration-none text-black">
@@ -85,6 +85,33 @@
               </div>
             </a>
           </div>
+        </div>
+      }
+
+      @if (totalPaginas() > 1) {
+        <div class="d-flex justify-content-center align-items-center gap-2 mt-4">
+
+          <button class="btn btn-pag"
+                  [disabled]="paginaActual() === 1"
+                  (click)="irAPagina(paginaActual() - 1)">
+            <span class="material-icons-round" style="font-size:1.1rem;">Anterior</span>
+          </button>
+
+          @for (p of paginas(); track p) {
+            <button class="btn btn-pag"
+                    [class.activa]="p === paginaActual()"
+                    (click)="irAPagina(p)">
+              {{ p }}
+            </button>
+          }
+
+          <!-- Siguiente -->
+          <button class="btn btn-pag"
+                  [disabled]="paginaActual() === totalPaginas()"
+                  (click)="irAPagina(paginaActual() + 1)">
+            <span class="material-icons-round" style="font-size:1.1rem;">Siguiente</span>
+          </button>
+
         </div>
       }
     </div>
