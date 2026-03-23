@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaScriptLibraryMappings">
+    <excludedPredefinedLibrary name="laravel_ch_mon_juan_dossantos_api_admin/frontend_Cadmin_Juan/node_modules" />
+  </component>
+</project>

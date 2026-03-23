@@ -38,9 +38,17 @@ export class LoginComponent implements OnInit {
 
     this.auth.login(credentials).subscribe({
       next: () => {
-        this.router.navigate(['/petitions']).then(() => {
-          this.petitionService.fetchPeticiones().subscribe();
-        });
+        if (this.auth.isAdmin()) {
+          this.router.navigate(['/admin']).then(() => {
+            this.petitionService.getPeticionesAdmin().subscribe();
+          }); // ¡Al panel VIP!
+          console.log("admin")
+        } else {
+          this.router.navigate(['/petitions']).then(() => {
+            this.petitionService.fetchPeticiones().subscribe();
+          }); // Al listado normal
+          console.log(("user"))
+        }
       },
       error: (err) => {
         this.errorMessage = 'Credenciales incorrectas o error de conexión';

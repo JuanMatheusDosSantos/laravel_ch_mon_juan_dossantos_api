@@ -58,6 +58,7 @@ export class ShowComponent implements OnInit {
     let file;
     const pet = this.peticion();
 
+    console.log("este es el pet signers",pet?.signers)
     let finalUrl: [] | any = []
     if (pet && pet.files && pet.files.length > 0) {
       for (file of pet.files) {
