@@ -18,7 +18,7 @@ class PetitionController extends Controller
     {
         // $count = Petition::all()->count();
 //        $petitions = Petition::paginate(10);
-        $petitions = Petition::with('file', "user")->get();
+        $petitions = Petition::with('file', "user","category")->get();
         return response()->json($petitions, 200);
     }
 

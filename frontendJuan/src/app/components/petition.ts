@@ -14,26 +14,6 @@ export class PetitionService {
 
   fetchPeticiones() {
     this.loading.set(true);
-    // return this.http.get<any>(this.API_URL).pipe(
-    //   map(res => {
-    //     const rawData = res.data ?? res;
-    //     const data = Array.isArray(rawData) ? rawData : [];
-    //
-    //     return data.map((p: any) => {
-    //       return {
-    //         ...p,
-    //         files: p.files && p.files.length > 0
-    //           ? p.files
-    //           : (p.file ? [p.file] : [])
-    //       };
-    //     });
-    //   }),
-    //   tap(peticiones => {
-    //     this.#peticiones.set(peticiones);
-    //     this.loading.set(false);
-    //   })
-    // );
-
     return this.http.get<any>(this.API_URL).pipe(
       map(res => {
         const rawData = res.data ?? res;
@@ -127,6 +107,44 @@ export class PetitionService {
       {}
     );
   }
+  getPeticionesAdmin(){
+    this.loading.set(true);
+    return this.http.get<any>(this.API_URL).pipe(
+      map(res => {
+        const rawData = res.data ?? res;
+        const data = Array.isArray(rawData) ? rawData : [];
 
+        return data.map((p: any) => {
+          // 1. Intentamos sacar los archivos de 'files' (aplanándolos) o de 'file'
+          let normalizedFiles = [];
+
+          if (Array.isArray(p.files)) {
+            // .flat() convierte [[obj]] en [obj]
+            normalizedFiles = p.files.flat();
+          } else if (p.file) {
+            // Si 'file' es un objeto único, lo metemos en un array
+            // Si ya es un array, lo aplanamos también
+            normalizedFiles = Array.isArray(p.file) ? p.file.flat() : [p.file];
+          }
+
+          return {
+            ...p,
+            files: normalizedFiles
+          };
+        });
+      }),
+      tap(peticiones => {
+        this.#peticiones.set(peticiones);
+        this.loading.set(false);
+      })
+    );
+  }
+  deletePeticionAdmin(id:number){
+    return this.http.delete(`${this.API_URL}/${id}`).pipe(
+      tap(() => {
+        this.#peticiones.update(list => list.filter(p => p.id !== id));
+      })
+    );
+  }
 }
 

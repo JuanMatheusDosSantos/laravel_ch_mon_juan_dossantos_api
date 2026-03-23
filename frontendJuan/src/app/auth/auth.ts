@@ -14,39 +14,34 @@ export class AuthService {
   user$ = this.userSubject.asObservable();
   currentUser = signal<any>(null);
 
+  private savedUser = JSON.parse(localStorage.getItem('user_data') || 'null');
+
 
   constructor(private http: HttpClient) {}
-  // initSession() {
-  //   const token = this.getAccessToken();
-  //   if (!token) return;
-  //
-  //   // Intentamos refrescar primero, luego cargamos el perfil
-  //   this.refreshToken().pipe(
-  //     catchError(() => {
-  //       this.limpiarSesionLocal();
-  //       return of(null);
-  //     }),
-  //     switchMap(res => {
-  //       if (!res) return of(null);
-  //       return this.getProfile();
-  //     }),
-  //     catchError(() => {
-  //       this.limpiarSesionLocal();
-  //       return of(null);
-  //     })
-  //   ).subscribe();
-  // }
-
   initSession() {
     const token = this.getAccessToken();
     if (!token) return;
 
-    this.refreshToken().pipe(
+    // this.refreshToken().pipe(
+    //   catchError(() => {
+    //     this.limpiarSesionLocal();
+    //     return of(null);
+    //   })
+    // ).subscribe();
+
+    this.getProfile().pipe(
       catchError(() => {
-        this.limpiarSesionLocal();
-        return of(null);
+        // Si falla (token expirado), intenta refrescar
+        return this.refreshToken().pipe(
+          switchMap(() => this.getProfile()),
+          catchError(() => {
+            this.limpiarSesionLocal();
+            return of(null);
+          })
+        );
       })
     ).subscribe();
+
   }
 
   login(credentials: { email: string; password: string }) {
@@ -107,16 +102,6 @@ export class AuthService {
   getAccessToken() {
     return localStorage.getItem('access_token');
   }
-  // refreshToken() {
-  //   return this.http.post<{ access_token: string }>(
-  //     `${this.api}/refresh`,
-  //     {}
-  //   ).pipe(
-  //     tap(res => {
-  //       localStorage.setItem('access_token', res.access_token);
-  //     })
-  //   );
-  // }
 
   refreshToken() {
     return this.http.post<{ access_token: string; token_type: string; expires_in: number; user: User }>(
@@ -140,5 +125,28 @@ export class AuthService {
         error: () => this.limpiarSesionLocal()
       });
     }
+  }
+
+  waitForUser() {
+    // Si ya hay usuario cargado, devuelve inmediatamente
+    if (this.currentUser()) {
+      return of(this.currentUser());
+    }
+
+    // Si hay token pero no usuario, cárgalo primero
+    if (this.getAccessToken()) {
+      return this.getProfile().pipe(
+        catchError(() => {
+          this.limpiarSesionLocal();
+          return of(null);
+        })
+      );
+    }
+
+    return of(null);
+  }
+
+  isAdmin(): boolean {
+    return this.currentUser()?.role === 'admin';
   }
 }

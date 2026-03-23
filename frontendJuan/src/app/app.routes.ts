@@ -8,6 +8,8 @@ import {ListComponent} from './views/list-component/list-component';
 import {RegisterComponent} from './pages/register/register';
 import {CreateComponent} from './views/create-component/create-component';
 import {EditComponent} from './views/edit-component/edit-component';
+import {adminGuard} from './auth/admin-guard';
+import {PanelComponent} from './views/panel/panel';
 
 export const routes: Routes = [
 
@@ -21,4 +23,12 @@ export const routes: Routes = [
 { path: 'login', component: LoginComponent },
 { path: 'register', component: RegisterComponent },
 { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+
+  // RUTA DEL PANEL DE ADMINISTRACIÓN (Debe ir antes del comodín **)
+  {
+    path: 'admin',
+    component: PanelComponent, // Más directo, ya que lo importaste arriba
+    canActivate: [adminGuard]
+  },
+
 { path: '**', component: HomeComponent, pathMatch: 'full'},];
