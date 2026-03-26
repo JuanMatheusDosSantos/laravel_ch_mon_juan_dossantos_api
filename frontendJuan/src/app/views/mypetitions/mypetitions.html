@@ -1,0 +1,119 @@
+<div class="container">
+  <!--  <div class="my-5">-->
+  <!--    <div class="d-flex flex-wrap gap-2">-->
+  <!--      @foreach($categories as $category)-->
+  <!--      <a href="{{route("petitions.category",["id"=>$category->id])}}" class="btn btn-outline-primary">{{$category->name}}</a>-->
+  <!--      @endforeach-->
+  <!--    </div>-->
+  <!--  </div>-->
+  <div class="my-5">
+    <!-- Filtros y búsqueda -->
+    <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+      <input
+        type="text"
+        class="form-control flex-grow-1"
+        placeholder="Buscar peticiones..."
+        (input)="aplicarFiltro('search',$any($event.target).value)"
+      />
+      <select class="form-select w-auto" (change)="aplicarFiltro('categoria',$any($event.target).value)">
+        <option value="">Todas las categorías</option>
+        @for(cat of categories; track cat.id) {
+          <option [value]="cat.id">{{ cat.name }}</option>
+        }
+      </select>
+      <select class="form-select w-auto" (change)="aplicarFiltro('firmado',$any($event.target).value)">
+        <option value="">Todas las peticiones</option>
+        <option value="firmada">Ya firmadas</option>
+        <option value="no_firmada">No firmadas</option>
+      </select>
+    </div>
+
+    <h3><strong>Peticiones patrocinadas por otros usuarios de Change.org</strong></h3>
+
+    <!--    <h3><strong>Peticiones patrocinadas por otros usuarios de Change.org</strong></h3>-->
+
+    <div class="row g-4">
+      @for(p of peticionesPaginadas(); track p.id){
+        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+          <div class="card w-100 h-100 shadow-sm">
+            <a [routerLink]="['/petitions', p.id]" class="text-decoration-none text-black">
+              @if (p.files?.[0]!=null) {
+
+                <img [src]="baseImageUrl + p.files?.[0]?.file_path"
+                     [alt]="p.files?.[0]?.name"
+                     class="card-img-top">
+              }
+
+              <div class="card-body">
+                <p class="card-title">{{ p.title }}</p>
+                <p class="card-text"><strong>{{ p.description }}</strong>.</p>
+
+                <div class="d-flex align-items-center mb-3">
+                  <img src="assets/img/pencil.png" alt="pencil" style="width: 20px;">
+                  <p class="text-primary m-0 ms-2">
+                    <strong>{{ p.signers }} firmas</strong>
+                  </p>
+                </div>
+
+                @if (isLoggedIn()) {
+                  @if (currentUser?.id === p.user_id) {
+                    <button class="btn btn-outline-dark w-100 d-none">
+                      Firmar esta petición
+                    </button>
+                    <button (click)="delete(p.id); $event.stopPropagation()" class="btn btn-danger btn-sm w-100 mt-2">
+                      Eliminar mi petición
+                    </button>
+                  }
+
+                  @else if (p.signers === currentUser?.id) {
+                    <!--                    <button (click)="p.id && firmar(p.id); $event.preventDefault()" class="btn btn-dark w-100">-->
+                      <!--                      Des-firmar esta petición-->
+                      <!--                    </button>-->
+                    <p class="btn btn-dark w-100 disabled"> Ya has firmado esta petición</p>
+                  }
+                  @else {
+                    <button (click)="p.id && firmar(p.id); $event.preventDefault()" class="btn btn-outline-dark w-100">
+                      Firmar esta petición
+                    </button>
+                  }
+
+                } @else {
+                  <a href="/login" class="btn btn-outline-dark w-100">
+                    Firma esta petición
+                  </a>
+                }
+              </div>
+            </a>
+          </div>
+        </div>
+      }
+
+      @if (totalPaginas() > 1) {
+        <div class="d-flex justify-content-center align-items-center gap-2 mt-4">
+
+          <button class="btn btn-pag"
+                  [disabled]="paginaActual() === 1"
+                  (click)="irAPagina(paginaActual() - 1)">
+            <span class="material-icons-round" style="font-size:1.1rem;">Anterior</span>
+          </button>
+
+          @for (p of paginas(); track p) {
+            <button class="btn btn-pag"
+                    [class.activa]="p === paginaActual()"
+                    (click)="irAPagina(p)">
+              {{ p }}
+            </button>
+          }
+
+          <!-- Siguiente -->
+          <button class="btn btn-pag"
+                  [disabled]="paginaActual() === totalPaginas()"
+                  (click)="irAPagina(paginaActual() + 1)">
+            <span class="material-icons-round" style="font-size:1.1rem;">Siguiente</span>
+          </button>
+
+        </div>
+      }
+    </div>
+  </div>
+</div>

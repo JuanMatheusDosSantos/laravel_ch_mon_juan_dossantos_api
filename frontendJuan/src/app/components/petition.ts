@@ -146,5 +146,55 @@ export class PetitionService {
       })
     );
   }
+  fetchMisPeticiones() {
+    this.loading.set(true);
+    return this.http.get<any>(`${this.API_URL}/mypetitions`).pipe(
+      map(res => {
+        const rawData = res.data ?? res;
+        const data = Array.isArray(rawData) ? rawData : [];
+
+        return data.map((p: any) => {
+          let normalizedFiles = [];
+
+          if (Array.isArray(p.files)) {
+            normalizedFiles = p.files.flat();
+          } else if (p.file) {
+            normalizedFiles = Array.isArray(p.file) ? p.file.flat() : [p.file];
+          }
+
+          return { ...p, files: normalizedFiles };
+        });
+      }),
+      tap(peticiones => {
+        this.#peticiones.set(peticiones);
+        this.loading.set(false);
+      })
+    );
+  }
+  fetchPeticionesFirmadas() {
+    this.loading.set(true);
+    return this.http.get<any>(`${this.API_URL}/mysignatures`).pipe(
+      map(res => {
+        const rawData = res.data ?? res;
+        const data = Array.isArray(rawData) ? rawData : [];
+
+        return data.map((p: any) => {
+          let normalizedFiles = [];
+
+          if (Array.isArray(p.files)) {
+            normalizedFiles = p.files.flat();
+          } else if (p.file) {
+            normalizedFiles = Array.isArray(p.file) ? p.file.flat() : [p.file];
+          }
+
+          return { ...p, files: normalizedFiles };
+        });
+      }),
+      tap(peticiones => {
+        this.#peticiones.set(peticiones);
+        this.loading.set(false);
+      })
+    );
+  }
 }
 

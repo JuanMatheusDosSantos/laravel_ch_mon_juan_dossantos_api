@@ -10,6 +10,8 @@ import {CreateComponent} from './views/create-component/create-component';
 import {EditComponent} from './views/edit-component/edit-component';
 import {adminGuard} from './auth/admin-guard';
 import {PanelComponent} from './views/panel/panel';
+import {Mypetitions} from './views/mypetitions/mypetitions';
+import {Signedpetitions} from './views/signedpetitions/signedpetitions';
 
 export const routes: Routes = [
 
@@ -30,5 +32,7 @@ export const routes: Routes = [
     component: PanelComponent, // Más directo, ya que lo importaste arriba
     canActivate: [adminGuard]
   },
+  {path:"mypetitions",component:Mypetitions, canActivate:[authGuard]},
+  {path:"signedpetitions",component:Signedpetitions, canActivate:[authGuard]},
 
 { path: '**', component: HomeComponent, pathMatch: 'full'},];

@@ -297,7 +297,7 @@ class PetitionController extends Controller
     {
         $user = Auth::id();
         try {
-            $petitions = Petition::where("user_id", $user)->get();
+            $petitions = Petition::where("user_id", $user)->with("file","user")->get();
             return response()->json($petitions);
         } catch (\Exception $exception) {
             return response()->json(["ha habido un error a la hora de mostrar tus peticiones"], 500);
@@ -308,7 +308,7 @@ class PetitionController extends Controller
     {
         $user = Auth::user();
         try {
-            $petitions = $user->signedPetitions()->get();
+            $petitions = $user->signedPetitions()->with("file","user")->get();
             return response()->json($petitions);
         } catch (\Exception $exception) {
             return response()->json(["ha habido un error a la hora de mostrar tus peticiones"], 500);
