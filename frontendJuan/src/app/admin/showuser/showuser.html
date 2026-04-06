@@ -1,0 +1,49 @@
+<div class="container my-5 d-flex justify-content-center">
+  @if (usuario() ; as user) {
+    <div class="card shadow border-0 overflow-hidden" style="max-width: 450px; width: 100%;">
+      <div class="bg-primary p-5 text-center">
+        <div class="rounded-circle bg-white d-inline-flex align-items-center justify-content-center shadow-lg"
+             style="width: 100px; height: 100px;">
+          <span class="fs-1 fw-bold text-primary">{{ user.name.charAt(0).toUpperCase() }}</span>
+        </div>
+      </div>
+
+      <div class="card-body text-center pt-5">
+        <h2 class="fw-bold mb-1">{{ user.name }}</h2>
+        <p class="text-muted mb-4">{{ user.email }}</p>
+
+        <div class="row g-2 mb-4">
+          <div class="col-6">
+            <a href="/edit-profile" class="btn btn-outline-secondary w-100 btn-sm">
+              <i class="bi bi-pencil me-2"></i>Editar perfil
+            </a>
+          </div>
+          <div class="col-6">
+            <button
+              class="btn w-100 btn-sm"
+              [ngClass]="user.role === 'admin' ? 'btn-outline-warning' : 'btn-outline-success'"
+              (click)="cambiarRol(user)">
+              <i class="bi me-2"
+                 [ngClass]="user.role === 'admin' ? 'bi-arrow-down-circle' : 'bi-arrow-up-circle'">
+              </i>
+              {{ user.role === 'admin' ? 'Hacer user' : 'Hacer admin' }}
+            </button>
+          </div>
+        </div>
+
+        <hr class="text-muted">
+
+        <button (click)="eliminarUsuario(user.id)" class="btn btn-danger w-100 mt-2">
+          <i class="bi bi-trash3-fill me-2"></i>Eliminar usuario
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2 text-muted">Cargando datos del perfil...</p>
+    </div>
+  }
+</div>

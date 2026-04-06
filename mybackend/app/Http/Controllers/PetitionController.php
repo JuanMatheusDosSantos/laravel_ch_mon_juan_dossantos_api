@@ -16,9 +16,7 @@ class PetitionController extends Controller
 {
     public function index()
     {
-        // $count = Petition::all()->count();
-//        $petitions = Petition::paginate(10);
-        $petitions = Petition::with('file', "user","category")->get();
+        $petitions = Petition::with('file', "user","category")->where("status","accepted")->get();
         return response()->json($petitions, 200);
     }
 
@@ -108,21 +106,6 @@ class PetitionController extends Controller
             }
             if (!(is_null($request->category)) && ($petition->category_id != $request->category)) {
                 $petition->category_id = $request->category;
-//                $catId = intval($request->category);
-//
-//                switch ($catId) {
-//                    case 1: $petition->category_id = 1; break;
-//                    case 2: $petition->category_id = 2; break;
-//                    case 3: $petition->category_id = 3; break;
-//                    case 4: $petition->category_id = 4; break;
-//                    case 5: $petition->category_id = 5; break;
-//                    case 6: $petition->category_id = 6; break;
-//                    default:
-//                        // Log para debug: Esto te dirá en storage/logs/laravel.log qué está llegando realmente
-//                        \Log::info("ID de categoría no reconocido: " . $request->category);
-//                        $petition->category_id = 1;
-//                        break;
-//                }
             }
         } catch (\Exception $e) {
             return response()->json(["message" => "error",
@@ -176,11 +159,6 @@ class PetitionController extends Controller
         return false;
     }
 
-//    function create(Request $request)
-//    {
-//        $categories = Category::all();
-//        return view("admin.petitions.create", compact("categories"));
-//    }
 
     function store(Request $request)
     {
@@ -235,16 +213,6 @@ class PetitionController extends Controller
         return response()->json(["message" => "success", "se ha creado exitosamente la peticion"], 201);
     }
 
-//    function search(Request $request)
-//    {
-//        $petitions = Petition::where("title", "like", "%$request->title%")
-//            ->orWhere("description", "like", "%$request->title%")
-//            ->paginate(10);
-//        $count = Petition::where("title", "like", "%$request->title%")
-//            ->orWhere("description", "like", "%$request->title%")
-//            ->count();
-//        return view("admin.home", compact("count", "petitions"));
-//    }
 
 
     private function fileUpload(Request $request, $id = null)

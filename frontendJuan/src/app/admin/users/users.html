@@ -1,0 +1,149 @@
+<div class="container my-5">
+
+  <!-- Spinner -->
+  @if (cargando()) {
+    <div class="text-center my-5">
+      <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  }
+
+  <!-- Tabla -->
+  @if (!cargando()) {
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover table-striped align-middle mb-0">
+            <thead class="table-warning">
+              <tr>
+                <th scope="col" class="ps-4">ID</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Email</th>
+                <th scope="col" class="text-center">Rol</th>
+                <th scope="col" class="text-center">Verificado</th>
+                <th scope="col" class="text-center pe-4">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <!-- Fila vacía -->
+              @if (usuarios().length === 0) {
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">
+                    No hay ningún usuario registrado en el sistema.
+                  </td>
+                </tr>
+              }
+
+              <!-- Filas de datos -->
+              @for (usuario of usuariosPaginados(); track usuario.id) {
+                <tr>
+
+                  <!-- ID -->
+                  <td class="ps-4 fw-bold">{{ usuario.id }}</td>
+
+                  <!-- Nombre -->
+                  <td>
+                    <i class="bi bi-person-fill me-1"></i>
+                    {{ usuario.name }}
+                  </td>
+
+                  <!-- Email -->
+                  <td class="text-muted">{{ usuario.email }}</td>
+
+                  <!-- Rol -->
+                  <td class="text-center">
+                    <span class="badge"
+                          [ngClass]="usuario.role === 'admin' ? 'bg-danger' : 'bg-secondary'">
+                      {{ usuario.role }}
+                    </span>
+                  </td>
+
+                  <!-- Verificado -->
+                  <td class="text-center">
+                    @if (usuario.email_verified_at) {
+                      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                    } @else {
+                      <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                    }
+                  </td>
+
+                  <!-- Acciones -->
+                  <td class="text-center pe-4">
+                    <div class="d-flex justify-content-center gap-2">
+                      <!-- Ver -->
+                      <a
+                        class="btn btn-sm btn-info"
+                        title="Ver"
+                        [routerLink]="['/admin/users', usuario.id]">
+                        <i class="bi bi-eye-fill"></i>
+                      </a>
+
+                      <!-- Editar -->
+
+                      <a
+                        class="btn btn-sm btn-primary"
+                        title="Editar"
+                        [routerLink]="['/admin/users/edit', usuario.id]">
+                        <i class="bi bi-pencil-fill"></i>
+                      </a>
+                      <!-- Cambiar rol -->
+                      <button
+                        class="btn btn-sm"
+                        [ngClass]="usuario.role === 'admin' ? 'btn-warning' : 'btn-success'"
+                        [title]="usuario.role === 'admin' ? 'Quitar admin' : 'Hacer admin'"
+                        (click)="cambiarRol(usuario)">
+                        <i class="bi"
+                           [ngClass]="usuario.role === 'admin' ? 'bi-arrow-down-circle' : 'bi-arrow-up-circle'">
+                        </i>
+                      </button>
+
+                      <!-- Eliminar -->
+                      <button
+                        class="btn btn-sm btn-outline-danger"
+                        title="Eliminar"
+                        (click)="eliminarUsuario(usuario.id)">
+                        <i class="bi bi-trash3-fill"></i>
+                      </button>
+
+                    </div>
+                  </td>
+
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Paginación -->
+  @if (totalPaginas() > 1) {
+    <div class="d-flex justify-content-center align-items-center gap-2 mt-4">
+
+      <button class="btn btn-pag"
+              [disabled]="paginaActual() === 1"
+              (click)="irAPagina(paginaActual() - 1)">
+        Anterior
+      </button>
+
+      @for (p of paginas(); track p) {
+        <button class="btn btn-pag"
+                [class.activa]="p === paginaActual()"
+                (click)="irAPagina(p)">
+          {{ p }}
+        </button>
+      }
+
+      <button class="btn btn-pag"
+              [disabled]="paginaActual() === totalPaginas()"
+              (click)="irAPagina(paginaActual() + 1)">
+        Siguiente
+      </button>
+
+    </div>
+  }
+
+</div>

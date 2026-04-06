@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, Validators, FormBuilder } from '@angular/forms'; // Asegúrate de que ReactiveFormsModule esté aquí
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth';
-import { PetitionService } from '../../components/petition';
+import {AdminService} from '../../admin';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +15,7 @@ import { PetitionService } from '../../components/petition';
 export class LoginComponent implements OnInit {
   private auth = inject(AuthService);
   private router = inject(Router);
-  private petitionService = inject(PetitionService);
+  private admin = inject(AdminService);
   private fb = inject(FormBuilder);
 
   errorMessage = '';
@@ -40,12 +40,12 @@ export class LoginComponent implements OnInit {
       next: () => {
         if (this.auth.isAdmin()) {
           this.router.navigate(['/admin']).then(() => {
-            this.petitionService.getPeticionesAdmin().subscribe();
+            this.admin.fetchPeticionesAdmin().subscribe();
           }); // ¡Al panel VIP!
           console.log("admin")
         } else {
           this.router.navigate(['/petitions']).then(() => {
-            this.petitionService.fetchPeticiones().subscribe();
+            this.admin.fetchPeticionesAdmin().subscribe();
           }); // Al listado normal
           console.log(("user"))
         }

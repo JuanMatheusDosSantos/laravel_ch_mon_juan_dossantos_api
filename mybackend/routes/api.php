@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminUsersController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PetitionController;
 use Illuminate\Http\Request;
@@ -33,10 +34,20 @@ Route::middleware(['auth:api', 'is_admin'])->prefix('admin')->group(function () 
     //haciendo la seguridad con ese middleware o incluso 'auth:sanctum', que es también la forma por
 //defecto de Laravel de hacer ese control de seguridad.
 // Listar todas las peticiones
-    Route::get('/peticiones', [AdminController::class, 'index']);
+    Route::get('/petitions', [AdminController::class, 'index']);
 // Eliminar una petición
-    Route::delete('/peticiones/{id}', [AdminController::class, 'destroy']);
-// Más adelante puedes añadir aquí rutas para gestionar usuarios, categorías, etc.
+    Route::delete('/petitions/{id}', [AdminController::class, 'destroy']);
+
+    Route::put('petitions/estado/{id}', [AdminController::class,'cambiarEstado']);
+
+    Route::put('petitions/edit/{id}', [AdminController::class,'update']);
+
+    Route::get('/users', [AdminUsersController::class, 'getUsers']);
+    Route::get('/users/{id}', [AdminUsersController::class, 'showUser']);
+    Route::put('/users/{id}', [AdminUsersController::class, 'updateUser']);
+    Route::put('/users/role/{id}', [AdminUsersController::class, 'roleUser']);
+    Route::delete('/users/{id}', [AdminUsersController::class, 'destroyUser']);
+
 });
 
 Route::get('/petitions/{id}', [PetitionController::class, 'show']);

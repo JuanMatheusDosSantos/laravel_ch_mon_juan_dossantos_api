@@ -1,93 +1,79 @@
-import {Component, computed, inject, signal} from '@angular/core';
+import {Component, OnInit, inject, signal, computed} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ActivatedRoute, RouterLink} from '@angular/router';
 import {PetitionService} from '../../components/petition';
-import {AuthService} from '../../auth/auth';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import {Categoria, Petition} from '../../models/petition';
-
-
+import {AdminService} from '../../admin'; // Ajusta tu ruta
 @Component({
-  selector: 'app-list-component',
+  selector: 'app-panel',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './list-component.html',
-  styleUrls: [
-    './list-component.css',
-    '../../../assets/css/carouselHome.css',
-    '../../../assets/css/general.css'
-  ],
+  templateUrl: './panel.html',
+  styleUrls: ['./panel.css'] // o .scss
 })
-export class ListComponent {
-  peticionService = inject(PetitionService);
-  public authService = inject(AuthService);
-  private route = inject(ActivatedRoute);
+export class PanelComponent implements OnInit {
   public baseImageUrl: string = 'http://localhost:8000/storage/assets/img/petitions/';
+  admin=inject(AdminService)
+// Señal para guardar las peticiones
+  peticiones = signal<any[]>([]);
+  cargando = signal<boolean>(true);
 
-  // peticiones: Petition[] = [];
-  peticiones = signal<Petition[]>([]);
-
-  categories: Categoria[]=[];
 
   searchQuery = signal('');
   categoriaSeleccionada = signal('');
 
   filtroFirmado = signal('');
 
-  public cargando: boolean = true;
-  public isLoggedIn = this.authService.isLoggedIn;
+  categories: Categoria[] = [];
+
+  private route = inject(ActivatedRoute);
 
   public currentUser: any | null=null;
 
   paginaActual = signal(1);
-  peticionesPorPagina  = signal(4);
+  peticionesPorPagina  = signal(20);
 
-  ngOnInit(): void {
-    // this.authService.initSession();
-    this.authService.user$.subscribe(user => {
-      this.currentUser = user ? user : null;
-    });
+  ngOnInit() {
+    // this.cargarPeticiones();
+
     this.route.queryParams.subscribe(params => {
-      this.cargando = true;
-      this.peticionService.fetchPeticiones().subscribe({
+      this.cargando.set(true);
+      this.admin.fetchPeticionesAdmin().subscribe({
         next: (data) => {
           this.peticiones.set(data)
+          console.log(this.peticiones)
           console.log(data)
           // console.log(data[0].category_count)
-          this.peticionService.getCategories().subscribe({
-            next:(data)=>{
-              this.categories=data
+          this.admin.getCategories().subscribe({
+            next: (data) => {
+              this.categories = data
               console.log(data)
             }
           })
-          this.cargando = false;
+          this.cargando.set(false);
         },
         error: (err) => {
           console.error('Error al cargar peticiones:', err);
-          this.cargando = false;
+          this.cargando.set(false);
         }
       });
     });
+
   }
 
-  delete(id: number) {
-    if (confirm('¿Seguro?')) {
-      this.peticionService.delete(id).subscribe({
-        error: (err) => alert('No puedes borrar esto (quizás no eres el dueño)'),
-        next: () => this.peticiones.update(ps=>ps.filter(p => p.id !== id))
+
+  eliminarPeticion(id: number) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta petición? Esta acción NO se puede deshacer.')) {
+      this.admin.deleteAdmin(id).subscribe({
+        next: () => {
+          this.peticiones.update(actuales => actuales.filter(p => p.id !== id))
+          alert('Petición eliminada correctamente')
+        }
       });
     }
   }
 
-  firmar(id: number) {
-    this.peticionService.firmar(id).subscribe({
-      next: () => {
-        // Recargamos la lista para que se actualicen los firmantes
-        this.peticionService.fetchPeticiones().subscribe(data => this.peticiones.set(data));
-      },
-      error: (err) => console.error('Error al firmar', err)
-    });
-  }
-    peticionesFiltradas=computed<Petition[]>(()=>
+  peticionesFiltradas=computed<Petition[]>(()=>
     this.peticiones().filter(p=>{
       const buscador=!this.searchQuery()||p.title.toLowerCase().includes(this.searchQuery().toLowerCase())
         ||p.description.toLowerCase().includes(this.searchQuery().toLowerCase())
@@ -102,8 +88,7 @@ export class ListComponent {
       return buscador && categorias && estaFirmado;
 
     })
-    )
-
+  )
   totalPaginas = computed(() =>
     //math.ceil sirve para aproximar al numero mas cercano, es decir, si tienes 5 peticiones/4 por pagina => daria 1.25, entonces se aproxima a 2
     Math.ceil(this.peticionesFiltradas().length / this.peticionesPorPagina())
@@ -136,5 +121,27 @@ export class ListComponent {
     if (tipo === 'categoria') this.categoriaSeleccionada.set(valor);
     if (tipo === 'firmado') this.filtroFirmado.set(valor);
     this.paginaActual.set(1); // vuelve siempre a la página 1
+  }
+
+  cambiarEstado(peticion: Petition) {
+    const nuevoEstado = peticion.status === 'accepted' ? 'deny' : 'accepted';
+    const accion = nuevoEstado === 'accepted' ? 'aceptar' : 'denegar';
+
+    if (confirm(`¿Estás seguro de que deseas ${accion} esta petición?`)) {
+      this.admin.cambiarEstadoPeticion(peticion.id, nuevoEstado).subscribe({
+        next: () => {
+          this.peticiones.update(actuales =>
+            actuales.map(p =>
+              p.id === peticion.id ? { ...p, status: nuevoEstado } : p
+            )
+          );
+          alert(`Petición ${accion === 'aceptar' ? 'aceptada' : 'denegada'} correctamente.`);
+        },
+        error: (err) => {
+          console.error(`Error al ${accion} la petición:`, err);
+          alert('Ocurrió un error al cambiar el estado. Inténtalo de nuevo.');
+        }
+      });
+    }
   }
 }

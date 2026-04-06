@@ -10,7 +10,7 @@ class PetitionPolicy
 {
     public function before(User $user, string $ability)
     {
-        if ($user->role_id == 1) {
+        if ($user->role == "admin") {
             return true;
         }
         return null;
@@ -37,7 +37,7 @@ class PetitionPolicy
      */
     public function update(User $user, Petition $peticione): bool
     {
-        if ($user->role_id == 0 && $peticione->user_id == $user->id) {
+        if ($user->role == "user" && $peticione->user_id == $user->id) {
             return true;
         }
         return false;
@@ -48,7 +48,7 @@ class PetitionPolicy
      */
     public function delete(User $user, Petition $peticione): bool
     {
-        if ($user->role_id == 0 && $peticione->user_id == $user->id) {
+        if ($user->role_id == "user" && $peticione->user_id == $user->id) {
             return true;
         }
         return false;

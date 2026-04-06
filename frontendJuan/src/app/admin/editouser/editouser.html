@@ -1,0 +1,43 @@
+<div class="text-center my-5">
+  <h1>Editar usuario</h1>
+  <div class="container d-flex justify-content-center">
+
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="w-50 border shadow p-5 bg-white rounded">
+
+      @if (errorMessage) {
+        <div class="alert alert-danger">
+          <p class="mb-0">{{ errorMessage }}</p>
+        </div>
+      }
+
+      <div class="mb-3 text-start">
+        <label for="name" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="name" formControlName="name">
+      </div>
+
+      <div class="mb-3 text-start">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" formControlName="email">
+      </div>
+
+      <div class="mb-3 text-start">
+        <label for="role" class="form-label">Rol</label>
+        <select formControlName="role" id="role" class="form-select">
+          <option value="">Selecciona un rol</option>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
+      <div class="mb-4 text-start">
+        <label for="password" class="form-label">Nueva contraseña <span class="text-muted">(dejar vacío para no cambiar)</span></label>
+        <input type="password" class="form-control" id="password" formControlName="password">
+      </div>
+
+      <button type="submit" class="btn btn-outline-primary w-100" [disabled]="editForm.invalid || loading">
+        {{ loading ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
+
+    </form>
+  </div>
+</div>

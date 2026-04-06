@@ -9,9 +9,14 @@ import {RegisterComponent} from './pages/register/register';
 import {CreateComponent} from './views/create-component/create-component';
 import {EditComponent} from './views/edit-component/edit-component';
 import {adminGuard} from './auth/admin-guard';
-import {PanelComponent} from './views/panel/panel';
+import {PanelComponent} from './admin/panel/panel';
 import {Mypetitions} from './views/mypetitions/mypetitions';
 import {Signedpetitions} from './views/signedpetitions/signedpetitions';
+import {AdminShow} from './admin/adminshow/adminshow';
+import {Edit} from './admin/edit/edit';
+import {Users} from './admin/users/users';
+import {Showuser} from './admin/showuser/showuser';
+import {Editouser} from './admin/editouser/editouser';
 
 export const routes: Routes = [
 
@@ -30,6 +35,31 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: PanelComponent, // Más directo, ya que lo importaste arriba
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/petitions/:id',
+    component: AdminShow, // Más directo, ya que lo importaste arriba
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/petitions/edit/:id',
+    component: Edit, // Más directo, ya que lo importaste arriba
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/users',
+    component: Users, // Más directo, ya que lo importaste arriba
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/users/:id',
+    component: Showuser, // Más directo, ya que lo importaste arriba
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/users/edit/:id',
+    component: Editouser, // Más directo, ya que lo importaste arriba
     canActivate: [adminGuard]
   },
   {path:"mypetitions",component:Mypetitions, canActivate:[authGuard]},
