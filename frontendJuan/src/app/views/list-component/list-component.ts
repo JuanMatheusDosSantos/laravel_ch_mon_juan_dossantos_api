@@ -137,4 +137,11 @@ export class ListComponent {
     if (tipo === 'firmado') this.filtroFirmado.set(valor);
     this.paginaActual.set(1); // vuelve siempre a la página 1
   }
+
+  desFirmar(id: number) {
+    this.peticionService.desFirmar(id).subscribe(
+      {
+        next: () => window.location.reload()
+      })
+  }
 }

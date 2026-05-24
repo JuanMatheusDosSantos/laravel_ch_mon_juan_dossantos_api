@@ -22,7 +22,7 @@ Route::middleware('auth:api')->group(function () {
 //    Route::get('/petitions/categories', [PetitionController::class, 'getCategories']);
     Route::get("/petitions/mypetitions", [PetitionController::class, "listMine"]);
     Route::get("/petitions/mysignatures", [PetitionController::class, "mysignatures"]);
-    Route::put('/petitions/{id}', [PetitionController::class, 'update']);
+    Route::post('/petitions/{id}', [PetitionController::class, 'update']);
     Route::delete('/petitions/{id}', [PetitionController::class, 'destroy']);
     Route::post('/petitions/firmar/{id}', [PetitionController::class, "sign"]);
     Route::post('/petitions/desfirmar/{id}', [PetitionController::class, "unsign"]);

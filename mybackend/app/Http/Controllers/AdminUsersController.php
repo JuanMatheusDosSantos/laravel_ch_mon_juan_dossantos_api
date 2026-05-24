@@ -9,19 +9,16 @@ class AdminUsersController extends Controller
 {
     public function getUsers()
     {
-// Traemos los usuarios y contamos sus peticiones y firmas para mostrarlo en la tabla
         $users = User::withCount(['petitions', 'signedPetitions'])->get();
         return response()->json(['data' => $users]);
     }
 
-// 2. Ver un usuario concreto
     public function showUser($id)
     {
         $user = User::withCount(['petitions', 'signedPetitions'])->findOrFail($id);
         return response()->json(['data' => $user]);
     }
 
-// 3. Editar usuario (Nombre, Email, Rol y Contraseña opcional)
     public function updateUser(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -34,7 +31,6 @@ class AdminUsersController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->role = $request->role;
-// Magia: Si el admin escribió algo en contraseña, la encriptamos y la cambiamos
         if ($request->filled('password')) {
             $user->password = bcrypt($request->password);
         }
@@ -43,16 +39,15 @@ class AdminUsersController extends Controller
             $user]);
     }
 
-// 4. Borrar usuario (CON PROTECCIÓN)
     public function destroyUser($id)
     {
-        $user = User::withCount(['petitions', 'signedPetitions'])->findOrFail($id);
-// Aplicamos tu regla de negocio
-        if (count($user->petitions) > 0 || count($user->signers) > 0) {
+        $user = User::with(['petitions', 'signedPetitions'])->findOrFail($id);
+
+        if ($user->petitions->count() > 0 || $user->signedPetitions->count() > 0) {
             return response()->json([
                 'success' => false,
                 'message' => 'No se puede eliminar: El usuario tiene peticiones creadas o firmas activas.'
-            ], 403); // 403 Forbidden o 422 Unprocessable Entity
+            ], 403);
         }
         $user->delete();
         return response()->json(['success' => true, 'message' => 'Usuario eliminado correctamente']);

@@ -58,13 +58,14 @@ class PetitionController extends Controller
         try {
 
             $request->validate([
-                "title" => "max:255|nullable",
-                "description" => "nullable|max:255",
-                "destinatary" => "nullable|max:255",
+                "title" => "max:255|",
+                "description" => "max:255",
+                "destinatary" => "max:255",
                 "category" => "required|exists:categories,id",
                 "signers" => "numeric|min:0",
-                "status" => "required|in:accepted,pending",
-                "image" => "nullable|file|mimes:jpg,jpeg,png,webp"
+                "status" => "required|in:accepted,pending","
+                files" => "array",
+                "files.*" => "file|mimes:jpg,jpeg,png,webp"
             ]);
         } catch (\Exception $e) {
             return response()->json(["message" => "error", "la validación ha fallado, por favor, introduce correctamente los datos"], 400);
@@ -85,9 +86,8 @@ class PetitionController extends Controller
                 $petition->description = $request->description;
             }
             try {
-                if (!is_null($request->image))
+                if ($request->hasFile('files')) {
                     $this->fileReUpload($request, $petition->id);
-                {
                 }
             } catch (\Exception $e) {
                 return response()->json([
@@ -123,40 +123,49 @@ class PetitionController extends Controller
 
     function fileReUpload(Request $request, $id)
     {
+        if (!$request->hasFile('files')) return false; // guard
+
         try {
+            $file = $request->file("files")[0]; // ← una sola referencia
+
             $imagenOriginal = File::where("petition_id", $id)->first();
-            $original = public_path("/storage/assets/img/petitions/" . $imagenOriginal->file_path);
-            if (FileFacade::exists($original)) {
-                FileFacade::delete($original);
+
+            // Borrar fichero físico anterior si existe
+            if ($imagenOriginal) {
+                $original = public_path("/storage/assets/img/petitions/" . $imagenOriginal->file_path);
+                if (FileFacade::exists($original)) {
+                    FileFacade::delete($original);
+                }
             }
-            $image = time() . '.' . $request->image->extension();
-            $path = public_path('\storage\assets\img\petitions');
-            $pathName = pathinfo($request->file("image")->getClientOriginalName(), PATHINFO_FILENAME);
-            $temp = $request->file("image")->getPathname();
+
+            $image    = time() . '.' . $file->extension();
+            $path     = public_path('/storage/assets/img/petitions');
+            $pathName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $temp     = $file->getPathname();
+
             if (!copy($temp, $path . DIRECTORY_SEPARATOR . $image)) {
                 return false;
             }
-            $petition = Petition::findOrFail($id);
+
             if ($imagenOriginal) {
                 $imagenOriginal->update([
-                    "name" => $pathName,
+                    "name"      => $pathName,
                     "file_path" => $image
                 ]);
             } else {
+                $petition = Petition::findOrFail($id);
                 $petition->file()->create([
-                    'name' => $pathName,
-                    'file_path' => $image,
+                    'name'        => $pathName,
+                    'file_path'   => $image,
                     'petition_id' => $id
                 ]);
-                return true;
             }
+
+            return true;
+
         } catch (\Exception $e) {
-            return response()->json(["message" => "error",
-//                "ha ocurrido un error"
-                $e->getMessage()
-            ], 400);
+            throw $e; // relanza para que el try/catch del update() lo capture
         }
-        return false;
     }
 
 
@@ -168,7 +177,8 @@ class PetitionController extends Controller
                 "description" => "required",
                 "destinatary" => "required",
                 "category" => "required",
-                "image" => "nullable|file|mimes:jpg,jpeg,png,webp"
+                "files"   => "nullable|array",
+                "files.*" => "file|mimes:jpg,jpeg,png,webp",
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -180,20 +190,20 @@ class PetitionController extends Controller
 
         try {
             $user =
-//              Auth::user();
-                1;
+              Auth::user();
+//                1;
             $categoryId = $request->category;
             $petition = Petition::create([
                 "title" => $request->get("title"),
                 "description" => $request->get("description"),
                 "destinatary" => $request->get("destinatary"),
                 "category_id" => $categoryId,
-//                "user_id" => $user->id,
-                "user_id" => $user,
+                "user_id" => $user->id,
+//                "user_id" => $user,
                 "signers" => 0,
                 "status" => "pending"
             ]);
-            if ($request->hasFile("image")) {
+            if ($request->hasFile("files")) {
 
                 $response = $this->fileUpload($request, $petition->id);
                 if (!$response) {
@@ -212,33 +222,29 @@ class PetitionController extends Controller
         }
         return response()->json(["message" => "success", "se ha creado exitosamente la peticion"], 201);
     }
-
-
-
     private function fileUpload(Request $request, $id = null)
     {
-        $image = null;
-        if ($request->hasFile("image")) {
-            $image = time() . '.' . $request->image->extension();
-            $path = public_path('storage\assets\img\petitions');
-            $pathName = pathinfo($request->file("image")->getClientOriginalName(), PATHINFO_FILENAME);
-            $temp = $request->file("image")->getPathname();
-            if (!copy($temp, $path . DIRECTORY_SEPARATOR . $image)) {
-                return false; // Error al copiar
-            }
+        if (!$request->hasFile("files")) return false;
 
-            // Asociar archivo a la petición
-            $petition = Petition::findOrFail($id);
-            $petition->file()->create([
-                'name' => $pathName,
-                'file_path' => $image,
-                'petition_id' => $id
-            ]);
-            return true;
+        $file     = $request->file("files")[0];
+        $image    = time() . '.' . $file->extension();
+        $path     = public_path('storage/assets/img/petitions');
+        $pathName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $temp     = $file->getPathname();
+
+        if (!copy($temp, $path . DIRECTORY_SEPARATOR . $image)) {
+            return false;
         }
-        return false;
-    }
 
+        $petition = Petition::findOrFail($id);
+        $petition->file()->create([
+            'name'        => $pathName,
+            'file_path'   => $image,
+            'petition_id' => $id
+        ]);
+
+        return true;
+    }
     function sign($id)
     {
 
