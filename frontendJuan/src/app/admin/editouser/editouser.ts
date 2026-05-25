@@ -2,11 +2,13 @@ import {Component, inject} from '@angular/core';
 import {AdminService} from '../../admin';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Sidebar} from '../sidebar/sidebar';
 
 @Component({
   selector: 'app-editouser',
   imports: [
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    Sidebar
   ],
   templateUrl: './editouser.html',
   styleUrl: './editouser.css',

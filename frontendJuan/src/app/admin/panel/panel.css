@@ -1,0 +1,38 @@
+.admin-wrapper {
+  display: flex;       /* Alinea sidebar y contenido en horizontal */
+  min-height: 100vh;   /* Asegura que ocupe todo el alto de la pantalla */
+}
+.sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background-color: #1e293b; /* Un tono oscuro (Slate) queda muy pro */
+  color: white;
+  padding: 1.5rem 1rem;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Sombra suave a la derecha */
+}
+
+/* Para que los enlaces ocupen todo el ancho y se vean bien */
+.sidebar a {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #cbd5e1;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar a:hover {
+  background-color: #334155;
+  color: white;
+}
+
+.main-content {
+  flex-grow: 1;        /* Hace que este div ocupe todo el espacio que sobra */
+  display: flex;
+  flex-direction: column; /* Apila Nav, Router y Footer uno encima de otro */
+}
+
+.page-container {
+  padding: 20px;
+  flex-grow: 1;        /* Empuja el footer al fondo si hay poco contenido */
+}

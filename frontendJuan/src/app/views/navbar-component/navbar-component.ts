@@ -11,6 +11,8 @@ import { CommonModule } from '@angular/common';
 })
 export class NavbarComponent {
   private authService = inject(AuthService);
+  protected auth = inject(AuthService);
+
   public router: Router = inject(Router);
 
 // REFERENCIA A SIGNALS:

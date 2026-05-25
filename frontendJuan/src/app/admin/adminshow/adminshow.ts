@@ -3,11 +3,13 @@ import {PetitionService} from '../../components/petition';
 import {AuthService} from '../../auth/auth';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {Petition} from '../../models/petition';
+import {Sidebar} from '../sidebar/sidebar';
 
 @Component({
   selector: 'app-show',
   imports: [
-    RouterLink
+    RouterLink,
+    Sidebar
   ],
   templateUrl: './adminshow.html',
   styleUrl: './adminshow.css',
@@ -56,7 +58,7 @@ export class AdminShow {
     let file;
     const pet = this.peticion();
 
-    console.log("este es el pet signers",pet?.signers)
+    // console.log("este es el pet signers",pet?.signers)
     let finalUrl: [] | any = []
     if (pet && pet.files && pet.files.length > 0) {
       for (file of pet.files) {

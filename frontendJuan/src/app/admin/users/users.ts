@@ -3,12 +3,14 @@ import {AdminService} from '../../admin';
 import {User} from '../../models/petition';
 import {NgClass} from '@angular/common';
 import {RouterLink} from '@angular/router';
+import {Sidebar} from '../sidebar/sidebar';
 
 @Component({
   selector: 'app-users',
   imports: [
     NgClass,
-    RouterLink
+    RouterLink,
+    Sidebar
   ],
   templateUrl: './users.html',
   styleUrl: './users.css',

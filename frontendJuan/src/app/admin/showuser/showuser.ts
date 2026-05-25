@@ -2,13 +2,13 @@ import {Component, inject, signal, OnInit} from '@angular/core';
 import {NgClass, AsyncPipe} from '@angular/common';
 import {Observable} from 'rxjs';
 import {AuthService} from '../../auth/auth';
-import {Router, ActivatedRoute} from '@angular/router';
+import {Router, ActivatedRoute, RouterLink} from '@angular/router';
 import {User} from '../../models/petition';
 import {AdminService} from '../../admin';
 
 @Component({
   selector: 'app-showuser',
-  imports: [NgClass, AsyncPipe],
+  imports: [NgClass, AsyncPipe, RouterLink],
   templateUrl: './showuser.html',
   styleUrl: './showuser.css',
 })

@@ -1,0 +1,29 @@
+<header class="d-flex border-bottom">
+  <div class="container d-flex justify-content-end align-items-center py-3">
+
+    <div class="d-flex align-items-center gap-3">
+      <a href="/" class="text-decoration-none text-black"><strong>Volver al área de Usuarios</strong></a>
+      <div class="dropdown my-auto">
+        <a class="nav-link dropdown-toggle text-black fw-bold px-0"
+           href="#"
+           role="button"
+           data-bs-toggle="dropdown"
+           aria-expanded="false">
+          Mi Cuenta
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+          <li>
+            <a class="dropdown-item py-2" href="/profile">Ver Perfil</a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <button (click)="logout()" class="dropdown-item text-danger py-2">
+              <strong>Salir</strong>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</header>

@@ -3,11 +3,12 @@ import {CommonModule} from '@angular/common';
 import {PetitionService} from '../../components/petition';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {Categoria, Petition} from '../../models/petition';
-import {AdminService} from '../../admin'; // Ajusta tu ruta
+import {AdminService} from '../../admin';
+import {Sidebar} from '../sidebar/sidebar'; // Ajusta tu ruta
 @Component({
   selector: 'app-panel',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, Sidebar],
   templateUrl: './panel.html',
   styleUrls: ['./panel.css'] // o .scss
 })
@@ -41,13 +42,13 @@ export class PanelComponent implements OnInit {
       this.admin.fetchPeticionesAdmin().subscribe({
         next: (data) => {
           this.peticiones.set(data)
-          console.log(this.peticiones)
-          console.log(data)
+          // console.log(this.peticiones)
+          // console.log(data)
           // console.log(data[0].category_count)
           this.admin.getCategories().subscribe({
             next: (data) => {
               this.categories = data
-              console.log(data)
+              // console.log(data)
             }
           })
           this.cargando.set(false);

@@ -1,22 +1,19 @@
-<!--&lt;!&ndash;<router-outlet />&ndash;&gt;-->
-<!--@if (auth.currentUser()?.role === 'admin') {-->
-<!--<app-sidebar class="sidebar"></app-sidebar>-->
-<!--}-->
-<!--<app-navbar-component></app-navbar-component>-->
-<!--<router-outlet></router-outlet>-->
-<!--<app-footer-component>  </app-footer-component>-->
-<div class="admin-wrapper">
-  @if (auth.currentUser()?.role === 'admin') {
-  <app-sidebar class="sidebar"></app-sidebar>
-  }
+<!--<div class="admin-wrapper">-->
+<!--  @if (auth.currentUser()?.role === 'admin') {-->
+<!--  <app-sidebar class="sidebar"></app-sidebar>-->
+<!--  }-->
   <div class="main-content">
-    <app-navbar-component></app-navbar-component>
-
-    <div class="page-container">
-      <router-outlet></router-outlet>
+    @if (esAdmin()) {
+      <app-admin-navbar></app-admin-navbar>
+    }
+    @if (!esAdmin()) {
+      <app-navbar-component></app-navbar-component>
+    }
+    <div class="admin-wrapper">
+      <div [class]="esAdmin() ? 'main-content' : ''">
+        <router-outlet></router-outlet>
+      </div>
     </div>
-
-    <app-footer-component></app-footer-component>
   </div>
 
-</div>
+<!--</div>-->

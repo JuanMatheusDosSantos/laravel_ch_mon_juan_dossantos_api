@@ -3,12 +3,14 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 import {ActivatedRoute, Router} from '@angular/router';
 import {Categoria} from '../../models/petition';
 import {AdminService} from '../../admin';
+import {Sidebar} from '../sidebar/sidebar';
 
 @Component({
   selector: 'app-edit',
-    imports: [
-        ReactiveFormsModule
-    ],
+  imports: [
+    ReactiveFormsModule,
+    Sidebar
+  ],
   templateUrl: './edit.html',
   styleUrl: './edit.css',
 })
