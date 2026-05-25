@@ -49,14 +49,12 @@
             @if (authService.isLoggedIn()&&!isSigned) {
               <button
                 (click)="firmar(p.id)"
-                [disabled]="currentUser?.id === p.user_id"
                 class="btn btn-warning w-100 py-2 mt-3">
                 Firma ahora
               </button>
             } @else if  (authService.isLoggedIn()&&isSigned) {
             <button
               (click)="desFirmar(p.id)"
-              [disabled]="currentUser?.id === p.user_id"
               class="btn btn-warning w-100 py-2 mt-3">
               DesFirmar Ahora
             </button>
