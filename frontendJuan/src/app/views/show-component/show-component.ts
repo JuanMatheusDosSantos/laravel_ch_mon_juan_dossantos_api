@@ -80,7 +80,7 @@ export class ShowComponent implements OnInit {
 
   get isSigned() {
     const pet = this.peticion()
-    return pet?.signers?.some((s: any) => s.id === this.currentUser.id)
+    return pet?.user_signers?.some((s: any) => s.id === this.currentUser.id)
   }
 
   recargar() {

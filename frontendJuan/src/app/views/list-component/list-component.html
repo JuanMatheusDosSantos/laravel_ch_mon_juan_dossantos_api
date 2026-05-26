@@ -8,17 +8,22 @@
             placeholder="Buscar peticiones..."
             (input)="aplicarFiltro('search',$any($event.target).value)"
           />
-          <select class="form-select w-auto" (change)="aplicarFiltro('categoria',$any($event.target).value)">
-            <option value="">Todas las categorías</option>
-            @for(cat of categories; track cat.id) {
-              <option [value]="cat.id">{{ cat.name }}</option>
-            }
-          </select>
+
           <select class="form-select w-auto" (change)="aplicarFiltro('firmado',$any($event.target).value)">
             <option value="">Todas las peticiones</option>
-            <option value="firmada">Ya firmadas</option>
-            <option value="no_firmada">No firmadas</option>
+            @if(firmadoDisponible().haySigned) {
+              <option value="firmada">Ya firmadas</option>
+            }
+            @if(firmadoDisponible().hayUnsigned) {
+              <option value="no_firmada">No firmadas</option>
+            }
           </select>
+          <select class="form-select w-auto" (change)="aplicarFiltro('categoria',$any($event.target).value)">
+          <option value="">Todas las categorías</option>
+          @for(cat of categoriasDisponibles(); track cat.id) {
+            <option [value]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
         </div>
 
         <h3><strong>Peticiones patrocinadas por otros usuarios de Change.org</strong></h3>
@@ -37,6 +42,7 @@
               }
 
               <div class="card-body">
+                <p class="card-text">{{p.category?.name}}</p>
                 <p class="card-title">{{ p.title }}</p>
                 <p class="card-text"><strong>{{ p.description }}</strong>.</p>
 
@@ -58,7 +64,7 @@
 <!--                  }-->
 
 <!--                  @else if (p.signers === currentUser?.id) {-->
-                  @if (p.signers === currentUser?.id) {
+                  @if (isSigned(p)) {
                     <button
                       (click)="desFirmar(p.id); $event.stopPropagation(); $event.preventDefault()"
 

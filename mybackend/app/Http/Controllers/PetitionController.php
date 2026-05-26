@@ -16,7 +16,7 @@ class PetitionController extends Controller
 {
     public function index()
     {
-        $petitions = Petition::with('file', "user","category")->where("status","accepted")->get();
+        $petitions = Petition::with('file', "user","category","userSigners")->where("status","accepted")->get();
         return response()->json($petitions, 200);
     }
 
@@ -29,9 +29,13 @@ class PetitionController extends Controller
     function show($id)
     {
         try {
-            $petition = Petition::with('file', "user", "signers")->findOrFail($id);
+            $petition = Petition::with('file', "user", "userSigners")->findOrFail($id);
         } catch (\Exception $e) {
-            return response()->json(["message" => "error", "no se ha podido encontrar la peticion"], 404);
+            return response()->json(["message" => "error",
+//                    "no se ha podido encontrar la peticion"
+                $e->getMessage()
+                ]
+                , 404);
         }
         return response()->json($petition);
     }
@@ -63,8 +67,8 @@ class PetitionController extends Controller
                 "destinatary" => "max:255",
                 "category" => "required|exists:categories,id",
                 "signers" => "numeric|min:0",
-                "status" => "required|in:accepted,pending","
-                files" => "array",
+                "status" => "required|in:accepted,pending",
+                "files" => "array",
                 "files.*" => "file|mimes:jpg,jpeg,png,webp"
             ]);
         } catch (\Exception $e) {
@@ -252,7 +256,7 @@ class PetitionController extends Controller
             $petition = Petition::findOrFail($id);
             $userId = Auth::id();
 //            if (!$petition->userSigners->contains(Auth::id())) {
-            $petition->signers()->attach($userId);
+            $petition->userSigners()->attach($userId);
             $petition->signers = $petition->signers + 1;
 //            } else {
 //                $petition->userSigners()->detach($userId);
@@ -299,7 +303,7 @@ class PetitionController extends Controller
 //                $petition->userSigners()->attach($userId);
 //                $petition->signers = $petition->signers + 1;
 //            } else {
-            $petition->signers()->detach($userId);
+            $petition->userSigners()->detach($userId);
             $petition->signers = $petition->signers - 1;
 //            }
             $petition->save();

@@ -4,6 +4,7 @@ import {AuthService} from '../../auth/auth';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {Petition} from '../../models/petition';
 import {Sidebar} from '../sidebar/sidebar';
+import {AdminService} from '../../admin';
 
 @Component({
   selector: 'app-show',
@@ -17,7 +18,7 @@ import {Sidebar} from '../sidebar/sidebar';
 export class AdminShow {
 
 
-  public peticionService = inject(PetitionService);
+  public admin = inject(AdminService);
   public authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -41,7 +42,7 @@ export class AdminShow {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     // 2. Cargamos la petición
     if (id) {
-      this.peticionService.getById(id).subscribe({
+      this.admin.getById(id).subscribe({
         next: (data) => {
           this.peticion.set(data);
           this.loading.set(false);
@@ -72,33 +73,33 @@ export class AdminShow {
   delete() {
     const pet = this.peticion();
     if (pet && confirm('¿Estás seguro?')) {
-      this.peticionService.delete(pet.id).subscribe(() => {
+      this.admin.deleteAdmin(pet.id).subscribe(() => {
         this.router.navigate(['/petitions']);
       });
     }
   }
 
-  get isSigned() {
-    const pet = this.peticion()
-    return pet?.signers?.some((s: any) => s.id === this.currentUser.id)
-  }
-
-  recargar() {
-    window.location.reload()
-  }
-
-  firmar(id: number) {
-    this.peticionService.firmar(id).subscribe(
-      {
-        next: () => window.location.reload()
-      })
-  }
-
-  desFirmar(id: number) {
-    this.peticionService.desFirmar(id).subscribe(
-      {
-        next: () => window.location.reload()
-      })
-  }
+  // get isSigned() {
+  //   const pet = this.peticion()
+  //   return pet?.signers?.some((s: any) => s.id === this.currentUser.id)
+  // }
+  //
+  // recargar() {
+  //   window.location.reload()
+  // }
+  //
+  // firmar(id: number) {
+  //   this.admin.firmar(id).subscribe(
+  //     {
+  //       next: () => window.location.reload()
+  //     })
+  // }
+  //
+  // desFirmar(id: number) {
+  //   this.admin.desFirmar(id).subscribe(
+  //     {
+  //       next: () => window.location.reload()
+  //     })
+  // }
 
 }

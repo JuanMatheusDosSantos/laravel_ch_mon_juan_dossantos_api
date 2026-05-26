@@ -19,7 +19,7 @@ export interface Petition {
   destinatary: string;
   user_id?: number;
   category_id?: number;
-  signers?: number[];
+  signers: number;
   status?: string;
   created_at?: Date;
 // Array de objetos PeticionFile
@@ -27,4 +27,5 @@ export interface Petition {
 // Relaciones opcionales
   category?: Categoria;
   user?: User;
+  user_signers?: User[];
 }

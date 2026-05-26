@@ -25,7 +25,7 @@ export class ListComponent {
 
   peticiones = signal<Petition[]>([]);
 
-  categories: Categoria[]=[];
+  categories = signal<Categoria[]>([]);
 
   searchQuery = signal('');
   categoriaSeleccionada = signal('');
@@ -41,7 +41,6 @@ export class ListComponent {
   peticionesPorPagina  = signal(4);
 
   ngOnInit(): void {
-    // this.authService.initSession();
     this.authService.user$.subscribe(user => {
       this.currentUser = user ? user : null;
     });
@@ -54,7 +53,7 @@ export class ListComponent {
           // console.log(data[0].category_count)
           this.peticionService.getCategories().subscribe({
             next:(data)=>{
-              this.categories=data
+              this.categories.set(data)
               console.log(data)
             }
           })
@@ -85,22 +84,14 @@ export class ListComponent {
       error: (err) => console.error('Error al firmar', err)
     });
   }
-    peticionesFiltradas=computed<Petition[]>(()=>
-    this.peticiones().filter(p=>{
-      const buscador=!this.searchQuery()||p.title.toLowerCase().includes(this.searchQuery().toLowerCase())
-        ||p.description.toLowerCase().includes(this.searchQuery().toLowerCase())
-      const categorias=!this.categoriaSeleccionada()||p.category_id?.toString()==this.categoriaSeleccionada()
-
-      const yaFirmada = p .signers === this.currentUser?.id;
-
-      const estaFirmado=!this.filtroFirmado()||
-        (this.filtroFirmado() === 'firmada' && yaFirmada) ||
-        (this.filtroFirmado() === 'no_firmada' && !yaFirmada);
-
-      return buscador && categorias && estaFirmado;
-
-    })
-    )
+  peticionesFiltradas = computed<Petition[]>(() => {
+    const f = this.filtroFirmado();
+    return this.categoria().filter(p => {
+      if (f === 'firmada') return this.isSigned(p);
+      if (f === 'no_firmada') return !this.isSigned(p);
+      return true;
+    });
+  });
 
   totalPaginas = computed(() =>
     Math.ceil(this.peticionesFiltradas().length / this.peticionesPorPagina())
@@ -137,4 +128,40 @@ export class ListComponent {
         next: () => window.location.reload()
       })
   }
+  isSigned(petition: Petition): boolean {
+    return petition.user_signers?.some(s => s.id === this.currentUser.id) ?? false
+  }
+
+  search = computed(() => {
+    const q = this.searchQuery().toLowerCase();
+    return this.peticiones().filter(p =>
+      !q || p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)
+    );
+  });
+  categoria = computed(() => {
+    const cat = this.categoriaSeleccionada();
+    return this.search().filter(p =>
+      !cat || p.category_id?.toString() === cat
+    );
+  });
+  categoriasDisponibles = computed(() => {
+    const ids = new Set(this.searchYFirmado().map(p => p.category_id));
+    return this.categories().filter(c => ids.has(c.id));
+  });
+
+  firmadoDisponible = computed(() => {
+    const pets = this.categoria();
+    const haySigned = pets.some(p => this.isSigned(p));
+    const hayUnsigned = pets.some(p => !this.isSigned(p));
+    return { haySigned, hayUnsigned };
+  });
+
+  searchYFirmado = computed(() => {
+    const f = this.filtroFirmado();
+    return this.search().filter(p => {
+      if (f === 'firmada') return this.isSigned(p);
+      if (f === 'no_firmada') return !this.isSigned(p);
+      return true;
+    });
+  });
 }
