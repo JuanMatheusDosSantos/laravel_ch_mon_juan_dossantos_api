@@ -1,6 +1,6 @@
 import {Component, computed, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {PetitionService} from '../../components/petition';
 import {AuthService} from '../../auth/auth';
 import {Categoria, Petition} from '../../models/petition';
@@ -21,6 +21,7 @@ export class ListComponent {
   peticionService = inject(PetitionService);
   public authService = inject(AuthService);
   private route = inject(ActivatedRoute);
+  private router=inject(Router)
   public baseImageUrl: string = 'http://localhost:8000/storage/assets/img/petitions/';
 
   peticiones = signal<Petition[]>([]);
@@ -168,4 +169,9 @@ export class ListComponent {
     return { haySigned, hayUnsigned };
   });
 
+  login(){
+    this.router.navigate(["/login"])
+  }
+
+  protected readonly event = event;
 }

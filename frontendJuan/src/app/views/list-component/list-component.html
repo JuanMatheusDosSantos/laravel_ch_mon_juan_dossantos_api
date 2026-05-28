@@ -83,7 +83,7 @@
                   }
 
                 } @else {
-                  <a href="/login" class="btn btn-outline-dark w-100">
+                  <a class="btn btn-outline-dark w-100" (click)="login(); $event.stopPropagation();$event.preventDefault()">
                     Firma esta petición
                   </a>
                 }
