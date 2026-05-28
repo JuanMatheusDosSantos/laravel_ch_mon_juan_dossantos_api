@@ -59,16 +59,6 @@
                 </div>
 
                 @if (isLoggedIn()) {
-<!--                  @if (currentUser?.id === p.user_id) {-->
-<!--                    <button class="btn btn-outline-dark w-100 d-none">-->
-<!--                      Firmar esta petición-->
-<!--                    </button>-->
-<!--                    <button (click)="delete(p.id); $event.stopPropagation(); $event.preventDefault()" class="btn btn-danger btn-sm w-100 mt-2">-->
-<!--                      Eliminar mi petición-->
-<!--                    </button>-->
-<!--                  }-->
-
-<!--                  @else if (p.signers === currentUser?.id) {-->
                   @if (isSigned(p)) {
                     <button
                       (click)="desFirmar(p.id); $event.stopPropagation(); $event.preventDefault()"
