@@ -9,21 +9,26 @@
             (input)="aplicarFiltro('search',$any($event.target).value)"
           />
 
-          <select class="form-select w-auto" (change)="aplicarFiltro('firmado',$any($event.target).value)">
+          <select class="form-select w-auto"
+                  [value]="filtroFirmado()"
+                  (change)="aplicarFiltro('firmado',$any($event.target).value)">
             <option value="">Todas las peticiones</option>
             @if(firmadoDisponible().haySigned) {
-              <option value="firmada">Ya firmadas</option>
+              <option value="firmada">Con firmas</option>
             }
             @if(firmadoDisponible().hayUnsigned) {
-              <option value="no_firmada">No firmadas</option>
+              <option value="no_firmada">Sin firmas</option>
             }
           </select>
-          <select class="form-select w-auto" (change)="aplicarFiltro('categoria',$any($event.target).value)">
-          <option value="">Todas las categorías</option>
-          @for(cat of categoriasDisponibles(); track cat.id) {
-            <option [value]="cat.id">{{ cat.name }}</option>
-          }
-        </select>
+
+          <select class="form-select w-auto"
+                  [value]="categoriaSeleccionada()"
+                  (change)="aplicarFiltro('categoria',$any($event.target).value)">
+            <option value="">Todas las categorías</option>
+            @for(cat of categoriasDisponibles(); track cat.id) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
         </div>
 
         <h3><strong>Peticiones patrocinadas por otros usuarios de Change.org</strong></h3>

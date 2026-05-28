@@ -116,10 +116,14 @@ export class ListComponent {
   }
 
   aplicarFiltro(tipo: 'search' | 'categoria' | 'firmado', valor: string) {
-    if (tipo === 'search') this.searchQuery.set(valor);
+    if (tipo === 'search') {
+      this.searchQuery.set(valor);
+      this.categoriaSeleccionada.set('');
+      this.filtroFirmado.set('');
+    }
     if (tipo === 'categoria') this.categoriaSeleccionada.set(valor);
     if (tipo === 'firmado') this.filtroFirmado.set(valor);
-    this.paginaActual.set(1); // vuelve siempre a la página 1
+    this.paginaActual.set(1);
   }
 
   desFirmar(id: number) {
@@ -128,8 +132,9 @@ export class ListComponent {
         next: () => window.location.reload()
       })
   }
+
   isSigned(petition: Petition): boolean {
-    return petition.user_signers?.some(s => s.id === this.currentUser.id) ?? false
+    return petition?.signers > 0;
   }
 
   search = computed(() => {
@@ -145,23 +150,22 @@ export class ListComponent {
     );
   });
   categoriasDisponibles = computed(() => {
-    const ids = new Set(this.searchYFirmado().map(p => p.category_id));
+    const f = this.filtroFirmado();
+    const base = this.search().filter(p => {
+      if (f === 'firmada') return this.isSigned(p);
+      if (f === 'no_firmada') return !this.isSigned(p);
+      return true;
+    });
+    const ids = new Set(base.map(p => p.category_id));
     return this.categories().filter(c => ids.has(c.id));
   });
 
+
   firmadoDisponible = computed(() => {
-    const pets = this.categoria();
+    const pets = this.search();
     const haySigned = pets.some(p => this.isSigned(p));
     const hayUnsigned = pets.some(p => !this.isSigned(p));
     return { haySigned, hayUnsigned };
   });
 
-  searchYFirmado = computed(() => {
-    const f = this.filtroFirmado();
-    return this.search().filter(p => {
-      if (f === 'firmada') return this.isSigned(p);
-      if (f === 'no_firmada') return !this.isSigned(p);
-      return true;
-    });
-  });
 }
