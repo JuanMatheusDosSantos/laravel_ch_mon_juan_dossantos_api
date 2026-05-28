@@ -47,7 +47,10 @@ export class AuthService {
   login(credentials: { email: string; password: string }) {
     return this.http
       .post<LoginResponse>(`${this.api}/login`, credentials)
-      .pipe(tap(res => this.storeTokens(res)));
+      .pipe(
+        tap(res => this.storeTokens(res)),
+        switchMap(() => this.getProfile())
+      );
   }
   register(data: { name: string; email: string; password: string }) {
     return this.http.post(`${this.api}/register`, data);

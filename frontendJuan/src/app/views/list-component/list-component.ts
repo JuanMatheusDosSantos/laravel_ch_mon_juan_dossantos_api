@@ -88,8 +88,8 @@ export class ListComponent {
   peticionesFiltradas = computed<Petition[]>(() => {
     const f = this.filtroFirmado();
     return this.categoria().filter(p => {
-      if (f === 'firmada') return this.isSigned(p);
-      if (f === 'no_firmada') return !this.isSigned(p);
+      if (f === 'firmada') return p.signers > 0;
+      if (f === 'no_firmada') return p.signers === 0;
       return true;
     });
   });
@@ -135,7 +135,8 @@ export class ListComponent {
   }
 
   isSigned(petition: Petition): boolean {
-    return petition?.signers > 0;
+    if (!this.currentUser) return false;
+    return petition.user_signers?.some(s => s.id === this.currentUser.id) ?? false
   }
 
   search = computed(() => {
@@ -153,8 +154,8 @@ export class ListComponent {
   categoriasDisponibles = computed(() => {
     const f = this.filtroFirmado();
     const base = this.search().filter(p => {
-      if (f === 'firmada') return this.isSigned(p);
-      if (f === 'no_firmada') return !this.isSigned(p);
+      if (f === 'firmada') return p.signers > 0;
+      if (f === 'no_firmada') return p.signers === 0;
       return true;
     });
     const ids = new Set(base.map(p => p.category_id));
@@ -163,9 +164,9 @@ export class ListComponent {
 
 
   firmadoDisponible = computed(() => {
-    const pets = this.search();
-    const haySigned = pets.some(p => this.isSigned(p));
-    const hayUnsigned = pets.some(p => !this.isSigned(p));
+    const pets = this.categoria();
+    const haySigned = pets.some(p => p.signers > 0);
+    const hayUnsigned = pets.some(p => p.signers === 0);
     return { haySigned, hayUnsigned };
   });
 

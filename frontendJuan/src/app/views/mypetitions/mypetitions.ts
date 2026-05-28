@@ -21,7 +21,7 @@ export class Mypetitions {
   // peticiones: Petition[] = [];
   peticiones = signal<Petition[]>([]);
 
-  categories: Categoria[]=[];
+  categories = signal<Categoria[]>([]);
 
   searchQuery = signal('');
   categoriaSeleccionada = signal('');
@@ -50,7 +50,7 @@ export class Mypetitions {
           // console.log(data[0].category_count)
           this.peticionService.getCategories().subscribe({
             next:(data)=>{
-              this.categories=data
+              this.categories.set(data)
               console.log(data)
             }
           })
@@ -127,9 +127,32 @@ export class Mypetitions {
 
   //esto es lo mismo que el filtro normal, solo que, añadiendo que si cambias algun filtro, vuelva a la pagina 1
   aplicarFiltro(tipo: 'search' | 'categoria' | 'firmado', valor: string) {
-    if (tipo === 'search') this.searchQuery.set(valor);
+    if (tipo === 'search') {
+      this.searchQuery.set(valor);
+      this.categoriaSeleccionada.set('');
+      this.filtroFirmado.set('');
+    }
     if (tipo === 'categoria') this.categoriaSeleccionada.set(valor);
     if (tipo === 'firmado') this.filtroFirmado.set(valor);
-    this.paginaActual.set(1); // vuelve siempre a la página 1
+    this.paginaActual.set(1);
   }
+
+  firmadoDisponible = computed(() => {
+    const pets = this.peticiones();
+    const haySigned = pets.some(p => p.signers > 0);
+    const hayUnsigned = pets.some(p => p.signers === 0);
+    return { haySigned, hayUnsigned };
+  });
+
+  categoriasDisponibles = computed(() => {
+    const f = this.filtroFirmado();
+    const base = this.peticiones().filter(p => {
+      if (f === 'firmada') return p.signers > 0;
+      if (f === 'no_firmada') return p.signers === 0;
+      return true;
+    });
+    const ids = new Set(base.map(p => p.category_id));
+    return this.categories().filter(c => ids.has(c.id));
+  });
+
 }

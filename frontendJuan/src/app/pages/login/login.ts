@@ -42,12 +42,8 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/admin']).then(() => {
             this.admin.fetchPeticionesAdmin().subscribe();
           }); // ¡Al panel VIP!
-          console.log("admin")
         } else {
-          this.router.navigate(['/petitions']).then(() => {
-            this.admin.fetchPeticionesAdmin().subscribe();
-          }); // Al listado normal
-          console.log(("user"))
+          this.router.navigate(['/petitions'])
         }
       },
       error: (err) => {
